@@ -1,0 +1,16 @@
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+    "username": "usuario_prueba",
+    "email": "prueba@ecommerce.com",
+    "password": "PasswordSegura123"
+},
+
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "prueba@ecommerce.com",
+    "password": "PasswordSegura123"
+}
