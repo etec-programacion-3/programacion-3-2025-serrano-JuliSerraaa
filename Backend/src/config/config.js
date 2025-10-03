@@ -2,28 +2,26 @@
 
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
-// Nota: Cuando usas 'import', debes usar la extensión .js para importar archivos locales.
-// Si dotenv.config() falla, revisa si estás en un entorno de desarrollo.
-dotenv.config(); 
+import path from 'path'; // <--- Importamos 'path'
 
-// Obtiene las variables de entorno
-const DB_NAME = process.env.DB_NAME;
-const DB_USER = process.env.DB_USER;
-const DB_PASS = process.env.DB_PASS;
-const DB_HOST = process.env.DB_HOST;
-const DB_DIALECT = process.env.DB_DIALECT || 'postgres'; 
+dotenv.config();
+
+// Obtenemos el directorio actual (import.meta.url es la forma ES Modules de obtenerlo)
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
+const DB_DIALECT = process.env.DB_DIALECT || 'sqlite'; 
+const DB_STORAGE_RELATIVE = process.env.DB_STORAGE || 'data/database.sqlite';
+
+// Construimos la ruta ABSOLUTA para el archivo de almacenamiento. 
+// Esto es CRUCIAL para SQLite. Si el directorio 'data' no existe, Node lo creará.
+const DB_STORAGE_ABSOLUTE = path.resolve(__dirname, '..', '..', DB_STORAGE_RELATIVE);
+
 
 // Crea la instancia de Sequelize
-const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
-  host: DB_HOST,
+const sequelize = new Sequelize({
   dialect: DB_DIALECT,
+  storage: DB_STORAGE_ABSOLUTE, // Usamos la ruta absoluta
   logging: false, 
-  pool: {
-    max: 5,
-    min: 0,
-    acquire: 30000,
-    idle: 10000
-  }
 });
 
 /**
@@ -32,11 +30,10 @@ const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
 export async function connectDB() {
   try {
     await sequelize.authenticate();
-    console.log('Conexión a la base de datos establecida correctamente.');
+    console.log(`Conexión a la base de datos SQLite establecida en ${DB_STORAGE_ABSOLUTE}.`);
   } catch (error) {
     console.error('Error al conectar a la base de datos:', error.message);
-    // Opcional: Terminar la aplicación si la conexión a la DB falla
-    // process.exit(1); 
+    process.exit(1); 
   }
 }
 

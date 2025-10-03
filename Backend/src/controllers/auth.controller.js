@@ -3,6 +3,8 @@
 import User from '../models/user.js'; // Importa el modelo de usuario
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET; // Usamos la variable de entorno
 
