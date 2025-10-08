@@ -6,10 +6,26 @@ import { register, login } from '../controllers/auth.controller.js';
 
 const router = Router();
 
-// Endpoint: POST /api/auth/register
+// Endpoint: POST /register
 router.post('/register', register);
 
-// Endpoint: POST /api/auth/login
+// Endpoint: POST /login
 router.post('/login', login);
+
+//Endpoint: GET /products
+router.get('/products', getProducts)
+
+//Endpoint: GET /products{id}
+router.get('/products/{id}', getProductsId)
+
+//Endpoint: POST /products
+router.post('/products', addProduct)
+
+//Endpoint: PUT /products{id}
+router.put('/products/{id}', putProduct)
+
+//Endpoint: DELETE /products{id}
+router.delete('/products/{id}', deleteProduct)
+
 
 export default router;
