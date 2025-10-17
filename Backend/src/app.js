@@ -12,7 +12,6 @@ app.use(express.json());
 // Conecta las rutas de autenticación bajo el prefijo /api/auth
 app.use('/api/auth', Routes);
 
-
 //Conecta las rutas de el CRUD de productos bajo el prefijo /api/product
 app.use('/api/product', Routes)
 

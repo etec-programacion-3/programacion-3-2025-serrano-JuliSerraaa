@@ -1,0 +1,80 @@
+@baseUrl = http://localhost:3000
+
+//@token = {{auth_token}}
+//@productId = {{new_product_id}}
+
+### 1. REGISTRAR USUARIO (Necesario para obtener un token)
+// Ejecuta el register de auth.http primero, o usa las credenciales de un usuario existente.
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+    "username": "tester_prod",
+    "email": "tester_prod@ecommerce.com",
+    "password": "Password123"
+}
+
+### 2. INICIAR SESIÓN (Obtener Token)
+// Al ejecutar esta petición, copia el valor de 'token' de la respuesta
+// y pégalo en la variable @token de arriba, o usa la funcionalidad
+// de VS Code para guardar el token automáticamente (si la tienes configurada).
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "tester_prod@ecommerce.com",
+    "password": "Password123"
+}
+
+### =========================================================
+###               CRUD DE PRODUCTOS
+### =========================================================
+
+### 3. CREAR UN NUEVO PRODUCTO (POST)
+// Esta es la prueba de 'addProduct'. El campo 'price' es nuevo en tu modelo.
+// Nota: Deberías usar middleware aquí, pero por ahora se deja sin token para probar funcionalidad base.
+POST {{baseUrl}}/api/product
+Content-Type: application/jsons
+// Authorization: Bearer {{token}}  <-- Descomentar cuando implementes middleware
+
+{
+    "productName": "Camiseta de Algodón Básica",
+    "productType": "Ropa",
+    "price": 19.99
+}
+
+### 4. OBTENER TODOS LOS PRODUCTOS (GET)
+// Prueba la función 'getProducts'.
+GET {{baseUrl}}/api/products
+// Authorization: Bearer {{token}}
+
+
+### 5. OBTENER UN PRODUCTO POR ID (GET /:id)
+// Reemplaza {id} por el productId que obtuviste del paso 3.
+GET {{baseUrl}}/api/products/1
+// Authorization: Bearer {{token}}
+
+
+### 6. ACTUALIZAR UN PRODUCTO EXISTENTE (PUT /:id)
+// Actualiza el producto con ID 1.
+PUT {{baseUrl}}/api/products/1
+Content-Type: application/json
+// Authorization: Bearer {{token}}
+
+{
+    "productName": "Camiseta de Algodón (Edición Limitada)",
+    "price": 29.99
+    // productType se mantiene igual
+}
+
+
+### 7. ELIMINAR UN PRODUCTO (DELETE /:id)
+// Elimina el producto con ID 1.
+DELETE {{baseUrl}}/api/products/1
+// Authorization: Bearer {{token}}
+
+
+### 8. OBTENER TODOS LOS PRODUCTOS DE NUEVO (Verificar eliminación)
+// Debería mostrar la lista de productos con uno menos.
+GET {{baseUrl}}/api/products
+// Authorization: Bearer {{token}}

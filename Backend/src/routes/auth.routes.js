@@ -2,7 +2,8 @@
 
 import { Router } from 'express';
 // Importa las funciones específicas del controller
-import { register, login } from '../controllers/auth.controller.js'; 
+import { register, login } from '../controllers/auth.controller.js';
+import {getProducts, getProductById, addProduct, updateProduct, deleteProduct} from '../controllers/product.controller.js' 
 
 const router = Router();
 
@@ -16,13 +17,13 @@ router.post('/login', login);
 router.get('/products', getProducts)
 
 //Endpoint: GET /products{id}
-router.get('/products/{id}', getProductsId)
+router.get('/products/{id}', getProductById)
 
 //Endpoint: POST /products
 router.post('/products', addProduct)
 
 //Endpoint: PUT /products{id}
-router.put('/products/{id}', putProduct)
+router.put('/products/{id}', updateProduct)
 
 //Endpoint: DELETE /products{id}
 router.delete('/products/{id}', deleteProduct)

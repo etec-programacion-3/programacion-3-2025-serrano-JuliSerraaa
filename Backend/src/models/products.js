@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/config.js'; // Importa la instancia de conexión
 
-const User = sequelize.define('Products', {
+const Product = sequelize.define('Products', {
   productId: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -17,10 +17,15 @@ const User = sequelize.define('Products', {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
-}
+},
+  price: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  }
+
 }, {
   // Opciones del modelo
-  tableName: 'products',
+  tableName: 'Products',
   timestamps: true,
 
   // Índices para mejorar la búsqueda
@@ -34,4 +39,4 @@ const User = sequelize.define('Products', {
 });
 
 // Exporta el modelo
-export default Products;
+export default Product;
