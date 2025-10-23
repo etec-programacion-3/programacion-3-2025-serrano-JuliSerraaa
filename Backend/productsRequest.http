@@ -34,7 +34,7 @@ Content-Type: application/json
 // Esta es la prueba de 'addProduct'. El campo 'price' es nuevo en tu modelo.
 // Nota: Deberías usar middleware aquí, pero por ahora se deja sin token para probar funcionalidad base.
 POST {{baseUrl}}/api/product
-Content-Type: application/jsons
+Content-Type: application/json
 // Authorization: Bearer {{token}}  <-- Descomentar cuando implementes middleware
 
 {

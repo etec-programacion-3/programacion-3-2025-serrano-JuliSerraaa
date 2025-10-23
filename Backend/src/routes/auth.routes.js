@@ -3,7 +3,8 @@
 import { Router } from 'express';
 // Importa las funciones específicas del controller
 import { register, login } from '../controllers/auth.controller.js';
-import {getProducts, getProductById, addProduct, updateProduct, deleteProduct} from '../controllers/product.controller.js' 
+import { getProducts, getProductById, addProduct, updateProduct, deleteProduct } from '../controllers/product.controller.js';
+import { protect } from '../middleware/auth.middleware.js'; // <--- 1. IMPORTA EL MIDDLEWARE
 
 const router = Router();
 
@@ -13,20 +14,27 @@ router.post('/register', register);
 // Endpoint: POST /login
 router.post('/login', login);
 
-//Endpoint: GET /products
-router.get('/products', getProducts)
+// =========================================================
+// RUTAS DE PRODUCTOS CORREGIDAS
+// =========================================================
 
-//Endpoint: GET /products{id}
-router.get('/products/{id}', getProductById)
+// Endpoint: GET /products (Leer todos - PÚBLICO)
+router.get('/products', getProducts);
 
-//Endpoint: POST /products
-router.post('/products', addProduct)
+// Endpoint: GET /products/:id (Leer uno - PÚBLICO)
+router.get('/products/:id', getProductById);
 
-//Endpoint: PUT /products{id}
-router.put('/products/{id}', updateProduct)
 
-//Endpoint: DELETE /products{id}
-router.delete('/products/{id}', deleteProduct)
+// --- RUTAS PROTEGIDAS ---
+
+// Endpoint: POST /product (Crear uno - PROTEGIDO)
+router.post('/product', protect, addProduct); // <--- 2. APLICA 'protect'
+
+// Endpoint: PUT /products/:id (Actualizar uno - PROTEGIDO)
+router.put('/products/:id', protect, updateProduct); // <--- 3. APLICA 'protect'
+
+// Endpoint: DELETE /products/:id (Eliminar uno - PROTEGIDO)
+router.delete('/products/:id', protect, deleteProduct); // <--- 4. APLICA 'protect'
 
 
 export default router;

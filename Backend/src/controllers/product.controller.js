@@ -1,6 +1,6 @@
 // src/controllers/product.controller.js
 
-import Product from '../models/products.js'; // Asegúrate que el modelo se llame 'products.js'
+import Product from '../models/products.js';
 
 // --- 1. GET ALL PRODUCTS ---
 export const getProducts = async (req, res) => {
@@ -31,15 +31,18 @@ export const getProductById = async (req, res) => {
   }
 };
 
+
 // --- 3. ADD NEW PRODUCT (CREATE) ---
 export const addProduct = async (req, res) => {
   const { productName, productType, price } = req.body;
+  const userId = req.user.id; // <--- OBTENEMOS EL ID DEL USUARIO AUTENTICADO
 
   try {
     const newProduct = await Product.create({
       productName,
       productType,
       price,
+      userId: userId, // <--- GUARDAMOS EL ID DEL DUEÑO
     });
 
     res.status(201).json({ 
@@ -56,6 +59,7 @@ export const addProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   const { id } = req.params;
   const { productName, productType, price } = req.body;
+  const userId = req.user.id; // <--- OBTENEMOS EL ID DEL USUARIO AUTENTICADO
 
   try {
     const product = await Product.findByPk(id);
@@ -63,6 +67,12 @@ export const updateProduct = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: `Producto con ID ${id} no encontrado.` });
     }
+
+    // --- VERIFICACIÓN DE PROPIEDAD ---
+    if (product.userId !== userId) {
+      return res.status(403).json({ message: 'Acción no permitida. No eres el propietario de este producto.' });
+    }
+    // ------------------------------------
 
     // Actualiza el producto
     product.productName = productName || product.productName;
@@ -84,17 +94,27 @@ export const updateProduct = async (req, res) => {
 // --- 5. DELETE PRODUCT ---
 export const deleteProduct = async (req, res) => {
   const { id } = req.params;
+  const userId = req.user.id; // <--- OBTENEMOS EL ID DEL USUARIO AUTENTICADO
 
   try {
-    const deletedCount = await Product.destroy({
-      where: { productId: id }
-    });
+    // Es mejor buscar el producto primero para verificar al dueño
+    const product = await Product.findByPk(id);
 
-    if (deletedCount === 0) {
+    if (!product) {
       return res.status(404).json({ message: `Producto con ID ${id} no encontrado.` });
     }
 
+    // --- VERIFICACIÓN DE PROPIEDAD ---
+    if (product.userId !== userId) {
+      return res.status(403).json({ message: 'Acción no permitida. No eres el propietario de este producto.' });
+    }
+    // ------------------------------------
+
+    // Si pasó la verificación, eliminamos el producto
+    await product.destroy();
+
     res.status(200).json({ message: 'Producto eliminado exitosamente.' });
+  
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error al eliminar el producto.' });

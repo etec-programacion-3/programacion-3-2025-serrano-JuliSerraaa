@@ -1,19 +1,19 @@
 // src/app.js
 import express from 'express';
-import Routes from './routes/auth.routes.js'; // Importaremos este archivo en el siguiente paso
+import Routes from './routes/auth.routes.js'; 
 
 const app = express();
 
 // Middleware
-// 1. Permite a Express parsear JSON en el cuerpo de las peticiones
 app.use(express.json());
 
 // Rutas (Endpoints)
 // Conecta las rutas de autenticación bajo el prefijo /api/auth
 app.use('/api/auth', Routes);
 
-//Conecta las rutas de el CRUD de productos bajo el prefijo /api/product
-app.use('/api/product', Routes)
+// Conecta las rutas de productos bajo el prefijo /api
+// Esto creará rutas como /api/product y /api/products
+app.use('/api', Routes); // <--- CORRECCIÓN
 
 // Exporta la aplicación para ser utilizada por server.js
 export default app;

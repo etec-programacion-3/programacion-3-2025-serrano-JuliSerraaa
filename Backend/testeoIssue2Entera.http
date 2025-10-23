@@ -1,0 +1,156 @@
+@baseUrl = http://localhost:3000
+
+# Variables para el Usuario 1 (Propietario)
+@tokenUser1 = 
+@productIdUser1 = 
+
+# Variables para el Usuario 2 (Intruso)
+@tokenUser2 =
+@productIdUser2 =
+
+### =========================================================
+###               SETUP: USUARIO 1 (PROPIETARIO)
+### =========================================================
+
+### 1. REGISTRAR USUARIO 1 (Propietario)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+    "username": "propietario_user",
+    "email": "propietario@ecommerce.com",
+    "password": "Password123"
+}
+
+### 2. LOGIN USUARIO 1 (Propietario)
+# (Guarda el 'token' de la respuesta en la variable @tokenUser1)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "propietario@ecommerce.com",
+    "password": "Password123"
+}
+
+### =========================================================
+###               SETUP: USUARIO 2 (INTRUSO)
+### =========================================================
+
+### 3. REGISTRAR USUARIO 2 (Intruso)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+    "username": "intruso_user",
+    "email": "intruso@ecommerce.com",
+    "password": "Password456"
+}
+
+### 4. LOGIN USUARIO 2 (Intruso)
+# (Guarda el 'token' de la respuesta en la variable @tokenUser2)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "intruso@ecommerce.com",
+    "password": "Password456"
+}
+
+### =========================================================
+###          PRUEBAS CRUD BÁSICO Y RUTAS PÚBLICAS
+### =========================================================
+
+### 5. CREAR PRODUCTO (Usuario 1 - Propietario)
+# (Ruta protegida)
+# (Guarda el 'product.productId' en la variable @productIdUser1)
+POST {{baseUrl}}/api/product
+Content-Type: application/json
+Authorization: Bearer {{tokenUser1}}
+
+{
+    "productName": "Laptop del Propietario",
+    "productType": "Electrónica",
+    "price": 1200.50
+}
+
+### 6. OBTENER TODOS LOS PRODUCTOS (Ruta Pública)
+# Debería mostrar el producto "Laptop del Propietario"
+GET {{baseUrl}}/api/products
+
+### 7. OBTENER UN PRODUCTO POR ID (Ruta Pública)
+# Debería mostrar los detalles de la Laptop
+GET {{baseUrl}}/api/products/{{productIdUser1}}
+
+
+### =========================================================
+###          PRUEBAS DE PERMISOS (ÉXITO - Propietario)
+### =========================================================
+
+### 8. ACTUALIZAR PRODUCTO (Usuario 1 - Propietario)
+# (Ruta protegida - DEBE FUNCIONAR)
+# El Usuario 1 actualiza SU PROPIO producto.
+PUT {{baseUrl}}/api/products/{{productIdUser1}}
+Content-Type: application/json
+Authorization: Bearer {{tokenUser1}}
+
+{
+    "productName": "Laptop del Propietario (Actualizada)",
+    "price": 1250.00
+}
+
+### =========================================================
+###          PRUEBAS DE SEGURIDAD (FALLO - Intruso)
+### =========================================================
+
+### 9. CREAR PRODUCTO (Usuario 2 - Intruso)
+# (Ruta protegida - DEBE FUNCIONAR)
+# (El Usuario 2 crea SU PROPIO producto para tener algo que borrar después)
+# (Guarda el 'product.productId' en @productIdUser2)
+POST {{baseUrl}}/api/product
+Content-Type: application/json
+Authorization: Bearer {{tokenUser2}}
+
+{
+    "productName": "Teléfono del Intruso",
+    "productType": "Electrónica",
+    "price": 800.00
+}
+
+### 10. (FALLO) ACTUALIZAR PRODUCTO AJENO (Usuario 2)
+# (Ruta protegida - DEBE FALLAR 403 FORBIDDEN)
+# El Usuario 2 (Intruso) intenta actualizar el producto del Usuario 1.
+PUT {{baseUrl}}/api/products/{{productIdUser1}}
+Content-Type: application/json
+Authorization: Bearer {{tokenUser2}}
+
+{
+    "productName": "PRODUCTO HACKEADO",
+    "price": 1.00
+}
+
+### 11. (FALLO) ELIMINAR PRODUCTO AJENO (Usuario 2)
+# (Ruta protegida - DEBE FALLAR 403 FORBIDDEN)
+# El Usuario 2 (Intruso) intenta eliminar el producto del Usuario 1.
+DELETE {{baseUrl}}/api/products/{{productIdUser1}}
+Authorization: Bearer {{tokenUser2}}
+
+
+### =========================================================
+###                       LIMPIEZA
+### =========================================================
+
+### 12. ELIMINAR PRODUCTO (Usuario 1 - Propietario)
+# (Ruta protegida - DEBE FUNCIONAR)
+# El Usuario 1 elimina SU PROPIO producto.
+DELETE {{baseUrl}}/api/products/{{productIdUser1}}
+Authorization: Bearer {{tokenUser1}}
+
+### 13. ELIMINAR PRODUCTO (Usuario 2 - Intruso)
+# (Ruta protegida - DEBE FUNCIONAR)
+# El Usuario 2 elimina SU PROPIO producto.
+DELETE {{baseUrl}}/api/products/{{productIdUser2}}
+Authorization: Bearer {{tokenUser2}}
+
+### 14. OBTENER TODOS LOS PRODUCTOS (Final)
+# La lista de productos debería estar vacía.
+GET {{baseUrl}}/api/products
