@@ -2,20 +2,27 @@
 
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
-import path from 'path'; // <--- Importamos 'path'
+import path from 'path'; 
+// AÑADIR esta importación:
+import { fileURLToPath } from 'url'; // <--- NUEVA IMPORTACIÓN
 
 dotenv.config();
 
 // Obtenemos el directorio actual (import.meta.url es la forma ES Modules de obtenerlo)
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+// REEMPLAZAR la línea:
+// const __dirname = path.dirname(new URL(import.meta.url).pathname);
+// POR estas dos líneas:
+const __filename = fileURLToPath(import.meta.url); // Convierte la URL a una ruta de archivo
+const __dirname = path.dirname(__filename); // Obtiene el directorio de la ruta del archivo
 
 const DB_DIALECT = process.env.DB_DIALECT || 'sqlite'; 
 const DB_STORAGE_RELATIVE = process.env.DB_STORAGE || 'data/database.sqlite';
 
-// Construimos la ruta ABSOLUTA para el archivo de almacenamiento. 
-// Esto es CRUCIAL para SQLite. Si el directorio 'data' no existe, Node lo creará.
-const DB_STORAGE_ABSOLUTE = path.resolve(__dirname, '..', '..', DB_STORAGE_RELATIVE);
+// ... (El resto del archivo se mantiene igual)
 
+// Construimos la ruta ABSOLUTA para el archivo de almacenamiento. 
+const DB_STORAGE_ABSOLUTE = path.resolve(__dirname, '..', '..', DB_STORAGE_RELATIVE);
+// ...
 
 // Crea la instancia de Sequelize
 const sequelize = new Sequelize({
