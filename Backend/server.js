@@ -4,6 +4,9 @@ import app from './src/app.js';
 import { connectDB } from './src/config/config.js'; // Función que intenta conectar
 import User from './src/models/user.js'; // Modelo de usuario
 import Product from './src/models/products.js'; //Modelo de productos
+import Conversation from './src/models/conversation.js'; // Modelo de conversación
+import Message from './src/models/message.js'; // Modelo de mensaje
+// -----------------------------
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -14,7 +17,10 @@ async function syncDatabase() {
   try {
     // Si el archivo SQLite NO existe, esta línea lo CREA antes de crear la tabla 'users'.
     await User.sync({ alter: true });
-    await Product.sync({alter: true});
+    await Product.sync({ alter: true });
+    await Conversation.sync({ alter: true });
+    await Message.sync({ alter: true });
+    // -----------------------------
     console.log('Modelos sincronizados con la base de datos (Tablas creadas/actualizadas).');
   } catch (error) {
     console.error('Error al sincronizar modelos:', error.message);
@@ -28,7 +34,7 @@ async function startServer() {
   await connectDB(); 
   
   // 2. Sincronizar (Crea la DB y las tablas si no existen)
-  await await syncDatabase(); 
+  await syncDatabase(); 
 
   app.listen(PORT, () => {
     console.log(`Servidor Express corriendo en http://localhost:${PORT}`);

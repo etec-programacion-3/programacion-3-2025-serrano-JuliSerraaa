@@ -1,0 +1,173 @@
+@baseUrl = http://localhost:3000
+
+# =========================================================
+#                    VARIABLES GLOBALES
+# =========================================================
+
+# NOTA: Después del Login, copia el token en esta variable.
+@tokenUserA = 
+# NOTA: Después del Login, copia el token en esta variable.
+@tokenUserB = 
+# NOTA: Después de crear el chat (Paso 5), copia el 'id' en esta variable.
+@convoId = 1
+# NOTA: Después del Login, copia el token en esta variable.
+@tokenUserC = 
+# =========================================================
+#                 SETUP: 3 USUARIOS DE PRUEBA
+# =========================================================
+
+### 1. REGISTRAR USUARIO A (Propietario del chat)
+# NOTA: Su ID será 1 (o el ID más bajo disponible)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+    "username": "usuario_a",
+    "email": "user_a@test.com",
+    "password": "Password123"
+}
+
+### 2. LOGIN USUARIO A
+# COPIA el 'token' en la variable @tokenUserA
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "user_a@test.com",
+    "password": "Password123"
+}
+
+### 3. REGISTRAR USUARIO B (Receptor y Propietario del chat)
+# NOTA: Su ID será 2 (o el siguiente ID disponible)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+    "username": "usuario_b",
+    "email": "user_b@test.com",
+    "password": "Password123"
+}
+
+### 4. LOGIN USUARIO B
+# COPIA el 'token' en la variable @tokenUserB
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "user_b@test.com",
+    "password": "Password123"
+}
+
+
+### 4.5 REGISTRAR USUARIO C (Intruso - NO PARTICIPANTE)
+# NOTA: Su ID será 3 (o el siguiente ID disponible)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+    "username": "usuario_c",
+    "email": "user_c@test.com",
+    "password": "Password123"
+}
+
+### 4.6 LOGIN USUARIO C
+# COPIA el 'token' en la variable @tokenUserC
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "user_c@test.com",
+    "password": "Password123"
+}
+
+
+### =========================================================
+###               PRUEBAS DE CONVERSACIONES
+### =========================================================
+
+### 5. (ÉXITO) CREAR CONVERSACIÓN (Usuario A -> Usuario B)
+# DEBE devolver la conversación recién creada.
+# COPIA el 'id' de la conversación (ej: 1) en la variable @convoId
+POST {{baseUrl}}/api/auth/conversations
+Authorization: Bearer {{tokenUserA}}
+Content-Type: application/json
+
+{
+    "receiverId": 2 
+}
+
+
+### 6. (ÉXITO) INTENTAR CREAR CONVERSACIÓN DUPLICADA (A -> B)
+# DEBE devolver la misma conversación creada en el Paso 5 (id: {{convoId}}).
+POST {{baseUrl}}/api/auth/conversations
+Authorization: Bearer {{tokenUserA}}
+Content-Type: application/json
+
+{
+    "receiverId": 2 
+}
+
+
+### 7. (ÉXITO) OBTENER LISTA DE CONVERSACIONES (Usuario A)
+# DEBE devolver una lista con 1 elemento (la conversación {{convoId}}).
+GET {{baseUrl}}/api/auth/conversations
+Authorization: Bearer {{tokenUserA}}
+
+
+### 8. (ÉXITO) ENVIAR PRIMER MENSAJE (Usuario A)
+# DEBE devolver un status 201 Created.
+POST {{baseUrl}}/api/auth/conversations/{{convoId}}/messages
+Authorization: Bearer {{tokenUserA}}
+Content-Type: application/json
+
+{
+    "content": "Hola Usuario B, ¿podríamos hablar sobre el producto?"
+}
+
+
+### 9. (ÉXITO) ENVIAR RESPUESTA (Usuario B)
+# DEBE devolver un status 201 Created.
+POST {{baseUrl}}/api/auth/conversations/{{convoId}}/messages
+Authorization: Bearer {{tokenUserB}}
+Content-Type: application/json
+
+{
+    "content": "Claro, Usuario A. Dime qué necesitas."
+}
+
+
+### 10. (ÉXITO) OBTENER MENSAJES DEL CHAT (Usuario A)
+# DEBE devolver una lista con 2 mensajes.
+GET {{baseUrl}}/api/auth/conversations/{{convoId}}/messages
+Authorization: Bearer {{tokenUserA}}
+
+
+### =========================================================
+###               PRUEBAS DE SEGURIDAD (403 Forbidden)
+### =========================================================
+
+### 11. (FALLO) ENVIAR MENSAJE SIN TOKEN
+# DEBE FALLAR con 401 Unauthorized
+POST {{baseUrl}}/api/auth/conversations/{{convoId}}/messages
+Content-Type: application/json
+
+{
+    "content": "Soy un hacker."
+}
+
+
+### 12. (FALLO) INTENTAR ENVIAR MENSAJE (Usuario C - Intruso)
+# DEBE FALLAR con 403 Forbidden. El Usuario C NO es user1Id ni user2Id.
+POST {{baseUrl}}/api/auth/conversations/{{convoId}}/messages
+Authorization: Bearer {{tokenUserC}}
+Content-Type: application/json
+
+{
+    "content": "¡Hola desde fuera del chat! (Esto debería fallar)"
+}
+
+
+### 13. (FALLO) INTENTAR LEER MENSAJES (Usuario C - Intruso)
+# DEBE FALLAR con 403 Forbidden.
+GET {{baseUrl}}/api/auth/conversations/{{convoId}}/messages
+Authorization: Bearer {{tokenUserC}}

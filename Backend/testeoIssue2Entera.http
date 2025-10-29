@@ -1,12 +1,12 @@
 @baseUrl = http://localhost:3000
 
 # Variables para el Usuario 1 (Propietario)
-@tokenUser1 = 
-@productIdUser1 = 
+@tokenUser1 = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJwcm9waWV0YXJpb0BlY29tbWVyY2UuY29tIiwiaWF0IjoxNzYxNjk3ODAxLCJleHAiOjE3NjE3ODQyMDF9.bN-7y92_7fg55Z7fhQWvuAmZfd2olDgNFQND8TMm-1o
+@productIdUser1 = 1
 
 # Variables para el Usuario 2 (Intruso)
-@tokenUser2 =
-@productIdUser2 =
+@tokenUser2 = yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJpbnRydXNvQGVjb21tZXJjZS5jb20iLCJpYXQiOjE3NjE2OTc4MjIsImV4cCI6MTc2MTc4NDIyMn0.O93vjK-fqFVuansELTvukarCu1st8V82lIQhc42GeWM
+@productIdUser2 = 2
 
 ### =========================================================
 ###               SETUP: USUARIO 1 (PROPIETARIO)
