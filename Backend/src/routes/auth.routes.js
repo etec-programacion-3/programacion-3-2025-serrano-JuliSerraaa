@@ -4,9 +4,22 @@ import { Router } from 'express';
 // Importa las funciones específicas del controller
 import { register, login } from '../controllers/auth.controller.js';
 import { getProducts, getProductById, addProduct, updateProduct, deleteProduct } from '../controllers/product.controller.js';
-import { protect } from '../middleware/auth.middleware.js'; // <--- 1. IMPORTA EL MIDDLEWARE
+import { protect } from '../middleware/auth.middleware.js';
+
+// --- AÑADIR ESTA LÍNEA ---
+import { 
+  createConversation, 
+  getUserConversations, 
+  sendMessage, 
+  getConversationMessages 
+} from '../controllers/conversation.controller.js';
+// -----------------------------
 
 const router = Router();
+
+// =========================================================
+// RUTAS DE REGISTRO Y LOGIN
+// =========================================================
 
 // Endpoint: POST /register
 router.post('/register', register);
@@ -15,26 +28,29 @@ router.post('/register', register);
 router.post('/login', login);
 
 // =========================================================
-// RUTAS DE PRODUCTOS CORREGIDAS
+// RUTAS DE PRODUCTOS
+// =========================================================
+router.get('/products', getProducts);
+router.get('/products/:id', getProductById);
+router.post('/product', protect, addProduct);
+router.put('/products/:id', protect, updateProduct);
+router.delete('/products/:id', protect, deleteProduct);
+
+// =========================================================
+// RUTAS DE CONVERSACIONES Y MENSAJES (NUEVAS)
 // =========================================================
 
-// Endpoint: GET /products (Leer todos - PÚBLICO)
-router.get('/products', getProducts);
+// POST /api/auth/conversations (Crear o encontrar conversación)
+router.post('/conversations', protect, createConversation);
 
-// Endpoint: GET /products/:id (Leer uno - PÚBLICO)
-router.get('/products/:id', getProductById);
+// GET /api/auth/conversations (Obtener mis conversaciones)
+router.get('/conversations', protect, getUserConversations);
 
+// POST /api/auth/conversations/:id/messages (Enviar mensaje a una conversación)
+router.post('/conversations/:id/messages', protect, sendMessage);
 
-// --- RUTAS PROTEGIDAS ---
-
-// Endpoint: POST /product (Crear uno - PROTEGIDO)
-router.post('/product', protect, addProduct); // <--- 2. APLICA 'protect'
-
-// Endpoint: PUT /products/:id (Actualizar uno - PROTEGIDO)
-router.put('/products/:id', protect, updateProduct); // <--- 3. APLICA 'protect'
-
-// Endpoint: DELETE /products/:id (Eliminar uno - PROTEGIDO)
-router.delete('/products/:id', protect, deleteProduct); // <--- 4. APLICA 'protect'
-
+// GET /api/auth/conversations/:id/messages (Obtener mensajes de una conversación)
+router.get('/conversations/:id/messages', protect, getConversationMessages);
+// ---------------------------------------------------------
 
 export default router;
