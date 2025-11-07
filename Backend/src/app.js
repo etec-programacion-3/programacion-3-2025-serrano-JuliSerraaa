@@ -1,11 +1,15 @@
 // src/app.js
 import express from 'express';
 import Routes from './routes/auth.routes.js'; 
+import cors from 'cors';
 
 const app = express();
 
 // Middleware
 app.use(express.json());
+
+//Uso de CORS
+app.use(cors());
 
 // Rutas (Endpoints)
 // Conecta las rutas de autenticación bajo el prefijo /api/auth
