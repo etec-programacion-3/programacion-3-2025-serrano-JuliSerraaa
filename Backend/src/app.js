@@ -1,23 +1,20 @@
 // src/app.js
 import express from 'express';
-import Routes from './routes/auth.routes.js'; 
+import authRoutes from './routes/auth.routes.js';
+import productRoutes from './routes/products.routes.js'; // NUEVO
+import conversationRoutes from './routes/conversations.routes.js'; // NUEVO
 import cors from 'cors';
 
 const app = express();
 
 // Middleware
 app.use(express.json());
-
-//Uso de CORS
 app.use(cors());
 
-// Rutas (Endpoints)
-// Conecta las rutas de autenticación bajo el prefijo /api/auth
-app.use('/api/auth', Routes);
-
-// Conecta las rutas de productos bajo el prefijo /api
-// Esto creará rutas como /api/product y /api/products
-app.use('/api', Routes); // <--- CORRECCIÓN
+// Rutas (Endpoints) - ORGANIZADAS POR CATEGORÍA
+app.use('/api/auth', authRoutes);        // Solo rutas de autenticación
+app.use('/api/products', productRoutes); // Solo rutas de productos  
+app.use('/api/chat', conversationRoutes); // Solo rutas de conversaciones
 
 // Exporta la aplicación para ser utilizada por server.js
 export default app;

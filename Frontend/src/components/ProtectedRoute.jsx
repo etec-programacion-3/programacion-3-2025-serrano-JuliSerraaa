@@ -2,22 +2,33 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
-// 1. Este componente es un "Envoltorio" (Wrapper).
-//    Recibe 'children', que será la página que queremos proteger (ej: Productos).
+/**
+ * COMPONENTE: ProtectedRoute
+ * DESCRIPCIÓN: Componente de orden superior que protege rutas privadas
+ * FUNCIONALIDAD:
+ * - Verifica si el usuario está autenticado antes de renderizar el contenido
+ * - Redirige al login si no hay token de autenticación
+ * PROPS:
+ * - children: Componente hijo que se renderizará si el usuario está autenticado
+ */
 function ProtectedRoute({ children }) {
-  
-  // 2. Llama a nuestro hook 'useAuth' para obtener el estado del token.
-  const { token } = useAuth(); 
+  // ===== OBTENER ESTADO DE AUTENTICACIÓN =====
+  const { token } = useAuth(); // Obtener token del contexto de autenticación
 
-  // 3. La lógica de protección (Cumple el criterio de "rutas privadas")
+  // ===== LÓGICA DE PROTECCIÓN =====
+  
+  // Si NO hay token (usuario no autenticado)
   if (!token) {
-    // 4. Si NO hay token (usuario no logueado),
-    //    usa el componente 'Navigate' para redirigir forzosamente al login.
-    //    'replace' evita que pueda volver atrás con el botón del navegador.
+    /**
+     * Redirigir al usuario a la página de login
+     * - replace: true evita que la ruta protegida quede en el historial
+     * - El usuario no podrá volver atrás a la ruta protegida
+     */
     return <Navigate to="/login" replace />;
   }
 
-  // 5. Si HAY token, simplemente renderiza los 'children' (la página solicitada).
+  // ===== USUARIO AUTENTICADO =====
+  // Si hay token, renderizar el componente hijo (contenido protegido)
   return children;
 }
 

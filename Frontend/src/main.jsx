@@ -1,53 +1,96 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 
-// 1. Importa todos nuestros componentes y proveedores
+// Importación de componentes y contextos
 import { AuthProvider } from './context/AuthContext.jsx';
 import App from './App.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
 import ProductsPage from './pages/ProductsPage.jsx';
-import ProtectedRoute from './components/ProtectedRoute.jsx'; // El guardián
+import ProductDetailPage from './pages/ProductDetailPage.jsx';
+import CreateProductPage from './pages/CreateProductPage.jsx';
+import EditProductPage from './pages/EditProductPage.jsx'; // NUEVO
+import UserProfilePage from './pages/UserProfilePage.jsx'; // NUEVO
+import ProtectedRoute from './components/ProtectedRoute.jsx';
 
-// 2. Renderiza la aplicación
+// Punto de entrada de la aplicación React
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    {/* 3. Envuelve TODA la aplicación en el AuthProvider.
-          Ahora, todos los componentes dentro de <BrowserRouter>
-          pueden usar el hook 'useAuth()' para saber si el usuario está logueado.
-    */}
+    {/* AuthProvider envuelve toda la app para proveer autenticación */}
     <AuthProvider>
-      {/* 4. Habilita el enrutamiento */}
+      {/* BrowserRouter habilita el enrutamiento en la aplicación */}
       <BrowserRouter>
-        {/* 5. Define las rutas */}
+        {/* Routes define todas las rutas de la aplicación */}
         <Routes>
-          {/* 6. Ruta de Layout ('App'): 
-                Todas las rutas anidadas se renderizarán dentro del <Outlet> de App.jsx
-          */}
+          {/* Ruta de layout (App) que contiene la barra de navegación y Outlet */}
           <Route path="/" element={<App />}>
             
-            {/* Rutas Públicas */}
+            {/* RUTAS PÚBLICAS - Accesibles sin autenticación */}
             <Route path="login" element={<LoginPage />} />
             <Route path="register" element={<RegisterPage />} />
 
-            {/* Rutas Privadas */}
-            {/* 'index' significa que esta es la ruta para el path '/' (la raíz) */}
+            {/* RUTAS PRIVADAS - Requieren autenticación */}
+            
+            {/* Ruta principal (índice) - Página de productos */}
             <Route
-              index 
+              index
               element={
-                // 7. Envuelve la página de productos con nuestro Guardián.
-                //    Si el usuario no está logueado, 'ProtectedRoute' lo
-                //    redirigirá a '/login' en lugar de mostrar 'ProductsPage'.
                 <ProtectedRoute>
                   <ProductsPage />
                 </ProtectedRoute>
               }
             />
-            {/* Aquí podrías añadir más rutas protegidas, ej:
-            <Route path="chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} /> 
-            */}
-
+            
+            {/* Ruta para detalles del producto */}
+            <Route
+              path="products/:id"
+              element={
+                <ProtectedRoute>
+                  <ProductDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* Ruta para crear producto */}
+            <Route
+              path="products/new"
+              element={
+                <ProtectedRoute>
+                  <CreateProductPage />
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* Ruta para editar producto - NUEVA */}
+            <Route
+              path="products/edit/:id"
+              element={
+                <ProtectedRoute>
+                  <EditProductPage />
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* Ruta para perfil de usuario - NUEVA */}
+            <Route
+              path="profile"
+              element={
+                <ProtectedRoute>
+                  <UserProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* Ruta para ver perfil de otros usuarios - NUEVA */}
+            <Route
+              path="users/:userId"
+              element={
+                <ProtectedRoute>
+                  <UserProfilePage />
+                </ProtectedRoute>
+              }
+            />
           </Route>
         </Routes>
       </BrowserRouter>

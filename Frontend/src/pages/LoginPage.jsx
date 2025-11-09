@@ -1,77 +1,124 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import apiClient from '../api/AxiosConfig.js'; // Usa nuestra instancia de Axios
+import apiClient from '../api/AxiosConfig.js';
+import '../styles/AuthPages.css'; // Importar estilos de autenticación
 
+/**
+ * COMPONENTE: LoginPage
+ * DESCRIPCIÓN: Página de inicio de sesión para usuarios existentes
+ * FUNCIONALIDAD:
+ * - Formulario de autenticación con validación
+ * - Manejo de errores de credenciales
+ * - Integración con el contexto de autenticación
+ */
 function LoginPage() {
-  // Estados para los campos del formulario
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null); // Estado para errores del backend
+  // ===== ESTADOS DEL FORMULARIO =====
+  const [email, setEmail] = useState(''); // Email del usuario
+  const [password, setPassword] = useState(''); // Contraseña del usuario
+  const [error, setError] = useState(null); // Maneja errores de autenticación
 
-  // Hooks de React Router y de nuestro Contexto
-  const navigate = useNavigate(); // Para redirigir al usuario
-  const { login } = useAuth(); // Obtiene la función 'login' de nuestro AuthContext
+  // ===== HOOKS Y CONTEXTO =====
+  const navigate = useNavigate(); // Navegación programática
+  const { login } = useAuth(); // Función login del contexto
 
-  // Función que se ejecuta al enviar el formulario
+  /**
+   * MANEJADOR: handleSubmit
+   * DESCRIPCIÓN: Procesa el envío del formulario de login
+   * @param {Event} e - Evento del formulario
+   */
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Evita que la página se recargue
-    setError(null); // Limpia errores antiguos
+    e.preventDefault(); // Prevenir recarga de página
+    setError(null); // Limpiar errores anteriores
 
     try {
-      // 1. Llama a la API (Nota: solo '/auth/login', la base ya está en apiClient)
+      // ===== LLAMADA A LA API: AUTENTICACIÓN =====
       const response = await apiClient.post('/auth/login', {
         email: email,
         password: password
       });
 
-      // 2. Si la API responde bien, response.data tendrá el token
-      const token = response.data.token;
+      // ===== ÉXITO: EXTRAER DATOS Y GUARDAR EN CONTEXTO =====
+      const { token, user } = response.data;
       
-      // 3. Llama a la función 'login' de nuestro AuthContext para guardar el token
-      login(token);
+      // Guardar token y datos del usuario en el contexto y localStorage
+      login(token, user);
 
-      // 4. Redirige al usuario a la página principal (Productos)
+      // Redirigir a la página principal
       navigate('/');
 
     } catch (err) {
-      // 5. Si la API falla (ej: 400 Credenciales inválidas)
-      //    Guarda el mensaje de error del backend para mostrarlo
-      setError(err.response?.data?.message || 'Error al iniciar sesión');
+      // ===== ERROR: MOSTRAR MENSAJE AL USUARIO =====
+      // Mensaje genérico por seguridad (no revelar si el email existe)
+      setError(err.response?.data?.message || 'Error al iniciar sesión. Verifica tus credenciales.');
     }
   };
 
-  // Esto es JSX (HTML dentro de JavaScript)
   return (
-    <div>
-      <h2>Iniciar Sesión</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email} // El valor del input está "atado" al estado
-            onChange={(e) => setEmail(e.target.value)} // Actualiza el estado al escribir
-            required
-          />
+    // ===== CONTENEDOR PRINCIPAL DE AUTENTICACIÓN =====
+    <div className="auth-page">
+      <div className="auth-container">
+        
+        {/* ===== TARJETA DE AUTENTICACIÓN ===== */}
+        <div className="auth-card">
+          
+          {/* ===== HEADER DE LA TARJETA ===== */}
+          <div className="auth-header">
+            <h1 className="auth-title">Iniciar Sesión</h1>
+            <p className="auth-subtitle">Bienvenido de vuelta a nuestra comunidad</p>
+          </div>
+
+          {/* ===== FORMULARIO DE LOGIN ===== */}
+          <form onSubmit={handleSubmit} className="auth-form">
+            
+            {/* CAMPO: EMAIL */}
+            <div className="auth-form-group">
+              <label className="auth-label">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="auth-input"
+                placeholder="tu@email.com"
+                required
+              />
+            </div>
+
+            {/* CAMPO: CONTRASEÑA */}
+            <div className="auth-form-group">
+              <label className="auth-label">Contraseña</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="auth-input"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            {/* ===== MENSAJE DE ERROR ===== */}
+            {error && <div className="error">{error}</div>}
+
+            {/* ===== BOTÓN DE ENVÍO ===== */}
+            <button type="submit" className="btn btn-primary auth-button">
+              Iniciar Sesión
+            </button>
+          </form>
+
+          {/* ===== PIE DE PÁGINA - ENLACE A REGISTRO ===== */}
+          <div className="auth-footer">
+            <p className="text-muted">
+              ¿No tienes cuenta?{' '}
+              <Link to="/register" className="auth-link">
+                Regístrate aquí
+              </Link>
+            </p>
+          </div>
         </div>
-        <div>
-          <label>Contraseña:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Entrar</button>
-      </form>
-      {/* Muestra el mensaje de error si 'error' no es nulo */}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <p>
-        ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
-      </p>
+      </div>
     </div>
   );
 }
+
 export default LoginPage;

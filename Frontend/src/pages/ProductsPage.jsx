@@ -1,51 +1,101 @@
 import React, { useState, useEffect } from 'react';
-import apiClient from '../api/AxiosConfig.js'; // Usa nuestra instancia de Axios
+import { Link } from 'react-router-dom';
+import apiClient from '../api/AxiosConfig.js';
+import ProductCard from '../components/ProductCard.jsx';
+import '../styles/ProductsPage.css'; // Importar estilos específicos de esta página
 
-// Esta es la página que PROTEGEREMOS
+/**
+ * COMPONENTE: ProductsPage
+ * DESCRIPCIÓN: Página principal que muestra la galería de productos
+ * FUNCIONALIDAD:
+ * - Obtiene y muestra todos los productos disponibles
+ * - Maneja estados de carga y error
+ * - Proporciona navegación para crear nuevos productos
+ */
 function ProductsPage() {
-  const [products, setProducts] = useState([]);
-  const [error, setError] = useState(null);
+  // ===== ESTADOS DEL COMPONENTE =====
+  const [products, setProducts] = useState([]); // Almacena la lista de productos
+  const [error, setError] = useState(null); // Maneja mensajes de error
+  const [loading, setLoading] = useState(true); // Controla el estado de carga
 
-  // 1. useEffect: Este hook se ejecuta *después* de que el componente se renderiza.
-  //    El '[]' vacío al final significa "ejecútate solo una vez, al cargar".
+  // ===== EFECTO PARA CARGAR PRODUCTOS =====
+  /**
+   * HOOK: useEffect
+   * DESCRIPCIÓN: Se ejecuta al montar el componente para cargar los productos
+   * DEPENDENCIAS: Array vacío [] = solo se ejecuta una vez al montar
+   */
   useEffect(() => {
-    
-    // 2. Definimos una función interna para cargar los productos
+    /**
+     * FUNCIÓN: fetchProducts
+     * DESCRIPCIÓN: Obtiene la lista de productos desde la API
+     */
     const fetchProducts = async () => {
       try {
-        // 3. Llama al endpoint protegido '/products'.
-        //    ¡No necesitamos añadir el token! El 'interceptor' de Axios lo hace solo.
+        setLoading(true); // Activar indicador de carga
+        setError(null); // Limpiar errores anteriores
+        
+        // LLAMADA A LA API: Obtener todos los productos
         const response = await apiClient.get('/products');
-        setProducts(response.data); // Guarda los productos en el estado
+        
+        // Actualizar estado con los productos obtenidos
+        setProducts(response.data);
       } catch (err) {
-        // 4. Si falla (ej: 401 No autorizado, si el token es malo), muestra un error
-        setError('Error al cargar productos. ¿Estás seguro de que estás logueado?');
+        // Manejar errores de la API
+        setError('Error al cargar productos. Por favor, intenta nuevamente.');
+      } finally {
+        // Siempre desactivar el loading, tanto en éxito como en error
+        setLoading(false);
       }
     };
 
-    fetchProducts(); // Llama a la función
-  }, []); // El '[]' es crucial
+    // Ejecutar la función para obtener productos
+    fetchProducts();
+  }, []); // Array de dependencias vacío = solo al montar
 
   return (
-    <div>
-      <h2>Página de Productos (Ruta Privada)</h2>
-      <p>Si puedes ver esto, es porque tu JWT es válido.</p>
-      
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      
-      <h3>Catálogo:</h3>
-      <ul>
-        {/* 5. Mapea (itera) sobre la lista de productos y los muestra */}
-        {products.length > 0 ? (
-          products.map((product) => (
-            <li key={product.productId}>
-              {product.productName} - ${product.price}
-            </li>
-          ))
-        ) : (
-          <p>Cargando productos o no hay productos...</p>
-        )}
-      </ul>
+    <div className="products-page">
+      {/* ===== ENCABEZADO DE LA PÁGINA ===== */}
+      <div className="products-header">
+        <h1 className="products-title">Descubre Productos Increíbles</h1>
+        <p className="products-subtitle">
+          Encuentra lo que necesitas en nuestra comunidad de compradores y vendedores
+        </p>
+      </div>
+
+      {/* ===== BOTÓN PARA CREAR PRODUCTO ===== */}
+      <Link to="/products/new" className="btn btn-primary create-product-btn">
+        <span>+</span> Crear Nuevo Producto
+      </Link>
+
+      {/* ===== MENSAJE DE ERROR ===== */}
+      {error && <div className="error">{error}</div>}
+
+      {/* ===== CONTENIDO PRINCIPAL - GALERÍA DE PRODUCTOS ===== */}
+      {loading ? (
+        // ESTADO DE CARGA: Mostrar indicador mientras se obtienen los datos
+        <div className="loading">
+          <p>Cargando productos...</p>
+        </div>
+      ) : products.length > 0 ? (
+        // ESTADO CON PRODUCTOS: Mostrar grid de productos
+        <div className="products-grid">
+          {products.map((product) => (
+            <ProductCard key={product.productId} product={product} />
+          ))}
+        </div>
+      ) : (
+        // ESTADO VACÍO: No hay productos disponibles
+        <div className="products-empty">
+          <div className="products-empty-icon">🛍️</div>
+          <h3>No hay productos disponibles</h3>
+          <p className="text-muted">
+            Sé el primero en agregar un producto a nuestra comunidad
+          </p>
+          <Link to="/products/new" className="btn btn-primary" style={{ marginTop: '1rem' }}>
+            Crear Primer Producto
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
