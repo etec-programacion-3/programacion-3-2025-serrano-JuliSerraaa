@@ -1,43 +1,83 @@
 import React, { createContext, useState, useContext } from 'react';
 
-// 1. createContext: Crea el "contenedor" global donde vivirá el estado.
+/**
+ * CONTEXTO: AuthContext
+ * DESCRIPCIÓN: Contexto global para manejar el estado de autenticación
+ * FUNCIONALIDAD:
+ * - Proporciona estado de autenticación a toda la aplicación
+ * - Maneja login, logout y persistencia en localStorage
+ * - Expone token y datos del usuario a componentes hijos
+ */
 const AuthContext = createContext(null);
 
-// 2. AuthProvider: Este es el componente que "proveerá" el estado a toda tu app.
-//    Recibe 'children', que es el resto de tu aplicación.
+/**
+ * COMPONENTE: AuthProvider
+ * DESCRIPCIÓN: Proveedor del contexto que envuelve la aplicación
+ * PROPS:
+ * - children: Componentes hijos que tendrán acceso al contexto
+ */
 export const AuthProvider = ({ children }) => {
+  // ===== ESTADOS DE AUTENTICACIÓN =====
   
-  // 3. useState: Este es el estado de autenticación.
-  //    Al iniciar, intenta leer el 'token' guardado en localStorage.
+  // Estado para el token JWT - Inicializa desde localStorage si existe
   const [token, setToken] = useState(localStorage.getItem('token'));
+  
+  // Estado para los datos del usuario - Inicializa desde localStorage si existe
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
 
-  // 4. Función de Login: La llamaremos después de que la API responda OK.
-  const login = (newToken) => {
-    localStorage.setItem('token', newToken); // Guarda el token en el navegador
-    setToken(newToken); // Actualiza el estado de React
+  /**
+   * FUNCIÓN: login
+   * DESCRIPCIÓN: Guarda el token y datos del usuario en el estado y localStorage
+   * @param {string} newToken - Token JWT recibido del servidor
+   * @param {object} userData - Datos del usuario autenticado
+   */
+  const login = (newToken, userData) => {
+    localStorage.setItem('token', newToken); // Persistir token en localStorage
+    localStorage.setItem('user', JSON.stringify(userData)); // Persistir usuario
+    setToken(newToken); // Actualizar estado de React
+    setUser(userData); // Actualizar estado del usuario
   };
 
-  // 5. Función de Logout: La llamaremos para cerrar sesión.
+  /**
+   * FUNCIÓN: logout
+   * DESCRIPCIÓN: Limpia todos los datos de autenticación
+   */
   const logout = () => {
-    localStorage.removeItem('token'); // Borra el token del navegador
-    setToken(null); // Actualiza el estado de React (lo pone en null)
+    localStorage.removeItem('token'); // Eliminar token del localStorage
+    localStorage.removeItem('user'); // Eliminar usuario del localStorage
+    setToken(null); // Limpiar estado del token
+    setUser(null); // Limpiar estado del usuario
   };
 
-  // 6. 'value': Es el objeto que compartiremos con el resto de la app.
-  //    Exponemos el token actual, y las funciones para cambiarlo.
+  // ===== VALOR DEL CONTEXTO =====
+  // Objeto que contiene todos los datos y funciones disponibles
   const value = {
-    token,
-    login,
-    logout,
+    token,     // Token JWT actual (null si no hay sesión)
+    user,      // Datos del usuario logueado (null si no hay sesión)
+    login,     // Función para iniciar sesión
+    logout,    // Función para cerrar sesión
   };
 
-  // 7. El Proveedor: Envuelve a los 'children' (tu app) y les da acceso al 'value'.
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  // Renderizar el Provider con el valor del contexto
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
-// 8. useAuth (Hook personalizado): 
-//    En lugar de importar 'useContext' y 'AuthContext' en cada archivo,
-//    solo importaremos 'useAuth()' para acceder al contexto. Es más limpio.
+/**
+ * HOOK PERSONALIZADO: useAuth
+ * DESCRIPCIÓN: Hook para acceder fácilmente al contexto de autenticación
+ * @returns {object} - Objeto con token, user, login y logout
+ */
 export const useAuth = () => {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
+  }
+  return context;
 };

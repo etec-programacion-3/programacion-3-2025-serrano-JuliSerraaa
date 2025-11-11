@@ -1,0 +1,235 @@
+/* 
+ARCHIVO: UserProfilePage.css
+DESCRIPCIÓN: Estilos para la página de perfil de usuario
+RESPONSABILIDAD: Diseño del perfil, información de usuario y lista de productos
+*/
+
+/* Contenedor principal de la página de perfil */
+.user-profile-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+/* Header del perfil */
+.profile-header {
+  margin-bottom: 3rem;
+}
+
+/* Tarjeta de información del perfil */
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  background: var(--gradient-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-xl);
+  padding: 2.5rem;
+  margin-top: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+}
+
+/* Avatar del usuario */
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+}
+
+/* Información del perfil */
+.profile-info {
+  flex: 1;
+}
+
+.profile-name {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.own-profile-badge {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.profile-email {
+  color: var(--color-text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.profile-stats {
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+}
+
+.profile-stats strong {
+  color: var(--color-primary);
+  font-size: 1.2rem;
+}
+
+/* Sección de productos */
+.profile-products-section {
+  margin-bottom: 3rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* Grid de productos del usuario */
+.user-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+/* Estado sin productos */
+.no-products {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--color-text-secondary);
+}
+
+.no-products-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.3;
+}
+
+.no-products h3 {
+  color: var(--color-text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+/* Sección de acciones del perfil */
+.profile-actions {
+  margin-top: 3rem;
+}
+
+.action-card {
+  background: var(--gradient-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-xl);
+  padding: 2rem;
+  text-align: center;
+}
+
+.action-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.action-description {
+  color: var(--color-text-secondary);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .user-profile-page {
+    padding: 1rem 0;
+  }
+  
+  .profile-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    gap: 1.5rem;
+  }
+  
+  .profile-name {
+    font-size: 1.75rem;
+    justify-content: center;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .user-products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .action-buttons .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-card {
+    padding: 1.5rem 1rem;
+    margin: 0 1rem;
+  }
+  
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+  }
+  
+  .profile-name {
+    font-size: 1.5rem;
+  }
+  
+  .user-products-grid {
+    grid-template-columns: 1fr;
+  }
+}

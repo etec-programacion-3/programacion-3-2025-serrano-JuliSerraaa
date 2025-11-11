@@ -1,0 +1,161 @@
+/* 
+ARCHIVO: ProductsPage.css
+DESCRIPCIÓN: Estilos específicos para la página de galería de productos
+RESPONSABILIDAD: Diseño del grid de productos, header y estados vacíos
+*/
+
+.products-page {
+  padding: 2rem 0;
+}
+
+/* Header de la página de productos */
+.products-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--color-border);
+  position: relative;
+}
+
+.products-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: var(--gradient-primary);
+  border-radius: 3px;
+}
+
+.products-title {
+  font-size: clamp(2.5rem, 6vw, 3.5rem);
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.products-subtitle {
+  font-size: 1.2rem;
+  color: var(--color-text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Botón de crear producto */
+.create-product-btn {
+  margin-bottom: 2rem;
+  font-size: 1rem;
+  padding: 1rem 2rem;
+}
+
+/* Grid de productos - Diseño minimalista y elegante */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+/* Estado cuando no hay productos */
+.products-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--color-text-secondary);
+}
+
+.products-empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.3;
+}
+
+.products-empty h3 {
+  color: var(--color-text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+/* Filtros y búsqueda (para futura implementación) */
+.products-filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-select {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  padding: 0.75rem 1rem;
+  color: var(--color-text-primary);
+  min-width: 200px;
+  font-family: inherit;
+  transition: all var(--transition-normal);
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.search-input {
+  flex: 1;
+  min-width: 300px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  padding: 0.75rem 1rem;
+  color: var(--color-text-primary);
+  font-family: inherit;
+  transition: all var(--transition-normal);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .products-header {
+    margin-bottom: 2rem;
+  }
+  
+  .create-product-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .products-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-input {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .products-page {
+    padding: 1rem 0;
+  }
+}

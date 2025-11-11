@@ -1,47 +1,109 @@
 import React from 'react';
-import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { useAuth } from './context/AuthContext.jsx'; // Importa nuestro hook
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from './context/AuthContext.jsx';
+import './styles/App.css'; // Importar estilos CSS globales
 
+/**
+ * COMPONENTE: App
+ * DESCRIPCIÓN: Componente principal que actúa como layout de la aplicación
+ * FUNCIONALIDAD: 
+ * - Define la estructura base con barra de navegación y área de contenido
+ * - Maneja la navegación y estado de autenticación
+ * - Renderiza condicionalmente enlaces según si el usuario está logueado
+ */
 function App() {
-  // 1. Obtiene el estado del token y la función de logout del contexto
-  const { token, logout } = useAuth();
+  // Obtener estado de autenticación del contexto
+  const { token, logout, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // 2. Función para manejar el clic en "Logout"
+  /**
+   * MANEJADOR: handleLogout
+   * DESCRIPCIÓN: Cierra la sesión del usuario y redirige al login
+   */
   const handleLogout = () => {
-    logout(); // Llama a la función del contexto
+    logout(); // Llama a la función logout del contexto
     navigate('/login'); // Redirige al usuario a la página de login
   };
 
-  return (
-    <div>
-      {/* --- BARRA DE NAVEGACIÓN --- */}
-      <nav style={{ padding: '10px', background: '#f0f0f0', borderBottom: '1px solid #ccc' }}>
-        <Link to="/" style={{ marginRight: '15px' }}>Productos (Inicio)</Link>
-        
-        {/* 3. Renderizado Condicional: 
-              Muestra 'Logout' o 'Login/Register' dependiendo del estado del token.
-        */}
-        {token ? (
-          // Si hay token (usuario logueado)
-          <button onClick={handleLogout}>Cerrar Sesión</button>
-        ) : (
-          // Si NO hay token (usuario no logueado)
-          <>
-            <Link to="/login" style={{ marginRight: '15px' }}>Login</Link>
-            <Link to="/register">Registro</Link>
-          </>
-        )}
-      </nav>
-      {/* --- FIN DE LA NAVEGACIÓN --- */}
+  /**
+   * FUNCIÓN: isActiveRoute
+   * DESCRIPCIÓN: Determina si una ruta está activa para resaltarla en la navegación
+   * @param {string} path - Ruta a verificar
+   * @returns {boolean} - True si la ruta está activa
+   */
+  const isActiveRoute = (path) => {
+    return location.pathname === path;
+  };
 
-      <hr />
-      
-      {/* 4. Outlet (Salida): 
-            Aquí es donde React Router renderizará el componente de la 
-            ruta actual (LoginPage, RegisterPage, o ProductsPage).
-      */}
-      <main style={{ padding: '20px' }}>
+  return (
+    <div className="app">
+      {/* ===== BARRA DE NAVEGACIÓN ===== */}
+      <nav className="navbar">
+        <div className="nav-content">
+          {/* Logo y enlace a la página principal */}
+          <Link 
+            to="/" 
+            className={`nav-link ${isActiveRoute('/') ? 'active' : ''}`}
+          >
+            🛍️ MiEcommerce
+          </Link>
+          
+          {/* Enlaces de navegación - Renderizado condicional según autenticación */}
+          <div className="nav-links">
+            {token ? (
+              <>
+                {/* USUARIO LOGUEADO: Muestra enlaces para usuarios autenticados */}
+                <Link 
+                  to="/" 
+                  className={`nav-link ${isActiveRoute('/') ? 'active' : ''}`}
+                >
+                  Productos
+                </Link>
+                <Link 
+                  to="/products/new" 
+                  className={`nav-link ${isActiveRoute('/products/new') ? 'active' : ''}`}
+                >
+                  Vender
+                </Link>
+                {/* Información del usuario logueado */}
+                <span className="text-muted" style={{ margin: '0 1rem' }}>
+                  Hola, {user?.username}
+                </span>
+                {/* Botón para cerrar sesión */}
+                <button 
+                  onClick={handleLogout}
+                  className="btn btn-outline"
+                  style={{ padding: '0.5rem 1rem' }}
+                >
+                  Cerrar Sesión
+                </button>
+              </>
+            ) : (
+              <>
+                {/* USUARIO NO LOGUEADO: Muestra enlaces de autenticación */}
+                <Link 
+                  to="/login" 
+                  className={`nav-link ${isActiveRoute('/login') ? 'active' : ''}`}
+                >
+                  Iniciar Sesión
+                </Link>
+                <Link 
+                  to="/register" 
+                  className="btn btn-primary"
+                  style={{ padding: '0.5rem 1.5rem' }}
+                >
+                  Registrarse
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      </nav>
+
+      {/* ===== CONTENIDO PRINCIPAL ===== */}
+      {/* Outlet: Aquí React Router renderizará el componente de la ruta actual */}
+      <main className="main-content">
         <Outlet />
       </main>
     </div>

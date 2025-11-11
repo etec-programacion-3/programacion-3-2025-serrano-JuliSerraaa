@@ -13,37 +13,56 @@ export const register = async (req, res) => {
   const { username, email, password } = req.body;
 
   try {
-    // 1. Verificar si el usuario ya existe
-    const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) {
+    // 1. Verificar si el usuario ya existe por EMAIL
+    const existingUserByEmail = await User.findOne({ where: { email } });
+    if (existingUserByEmail) {
       return res.status(400).json({ message: 'El usuario con ese email ya existe.' });
     }
 
-    // 2. Hashear la contraseña
+    // 2. NUEVA VERIFICACIÓN: Verificar si el usuario ya existe por USERNAME
+    const existingUserByUsername = await User.findOne({ where: { username } });
+    if (existingUserByUsername) {
+      return res.status(400).json({ message: 'El nombre de usuario ya está en uso. Por favor, elige otro.' });
+    }
+
+    // 3. Hashear la contraseña
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // 3. Crear el nuevo usuario en la DB
+    // 4. Crear el nuevo usuario en la DB
     const newUser = await User.create({
       username,
       email,
       password: hashedPassword,
     });
 
-    // 4. Generar Token de Autenticación (Opcional en Register, pero útil)
+    // 5. Generar Token de Autenticación
     const token = jwt.sign({ id: newUser.id, email: newUser.email }, JWT_SECRET, {
       expiresIn: '1d', // Expira en 1 día
     });
 
-    // 5. Respuesta exitosa
+    // 6. Respuesta exitosa - Incluye los datos del usuario sin la contraseña
     res.status(201).json({ 
       message: 'Usuario registrado exitosamente', 
-      user: { id: newUser.id, username: newUser.username, email: newUser.email },
+      user: { 
+        id: newUser.id, 
+        username: newUser.username, 
+        email: newUser.email 
+      },
       token
     });
 
   } catch (error) {
-    console.error(error);
+    console.error('Error completo en registro:', error);
+    
+    // Manejo específico de errores de Sequelize
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).json({ 
+        message: 'Error de duplicado: El nombre de usuario o email ya están en uso.' 
+      });
+    }
+    
+    // Error genérico del servidor
     res.status(500).json({ message: 'Error en el servidor durante el registro.' });
   }
 };
@@ -71,10 +90,14 @@ export const login = async (req, res) => {
       expiresIn: '1d',
     });
 
-    // 4. Respuesta exitosa
+    // 4. Respuesta exitosa - Incluye los datos del usuario sin la contraseña
     res.status(200).json({
       message: 'Inicio de sesión exitoso',
-      user: { id: user.id, username: user.username, email: user.email },
+      user: { 
+        id: user.id, 
+        username: user.username, 
+        email: user.email 
+      },
       token
     });
 
