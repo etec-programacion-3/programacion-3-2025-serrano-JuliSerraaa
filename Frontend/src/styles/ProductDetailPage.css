@@ -92,6 +92,29 @@ RESPONSABILIDAD: Diseño de la vista detallada, información del producto y acci
   opacity: 0.8;
 }
 
+/* ===== ACCIONES DEL COMPRADOR ===== */
+.buyer-actions {
+  text-align: center;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: rgba(16, 185, 129, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: var(--border-radius-lg);
+}
+
+.contact-seller-btn {
+  font-size: 1.1rem;
+  padding: 1rem 2rem;
+  min-width: 200px;
+}
+
+.action-help {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
 /* Grid de información del producto */
 .product-info {
   display: grid;
@@ -185,6 +208,16 @@ RESPONSABILIDAD: Diseño de la vista detallada, información del producto y acci
   .action-buttons .btn {
     width: 100%;
   }
+  
+  .buyer-actions {
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+  }
+  
+  .contact-seller-btn {
+    font-size: 1rem;
+    padding: 0.875rem 1.5rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -199,5 +232,9 @@ RESPONSABILIDAD: Diseño de la vista detallada, información del producto y acci
   .product-detail-price {
     font-size: 2rem;
     margin: 1.5rem 0;
+  }
+  
+  .buyer-actions {
+    padding: 1rem;
   }
 }
