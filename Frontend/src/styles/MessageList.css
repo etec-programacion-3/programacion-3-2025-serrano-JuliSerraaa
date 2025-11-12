@@ -1,0 +1,233 @@
+/* 
+ARCHIVO: MessageList.css
+DESCRIPCIÓN: Estilos para la lista de mensajes
+RESPONSABILIDAD: Diseño de mensajes, burbujas de chat y disposición de la conversación
+*/
+
+.message-list {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Contenedor de mensajes */
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Mensaje individual */
+.message {
+  display: flex;
+  margin-bottom: 0.5rem;
+}
+
+/* Mensaje propio (alineado a la derecha) */
+.message.own-message {
+  justify-content: flex-end;
+}
+
+/* Mensaje de otros (alineado a la izquierda) */
+.message.other-message {
+  justify-content: flex-start;
+}
+
+/* Mensaje con avatar (primer mensaje de una serie) */
+.message.with-avatar {
+  margin-top: 1rem;
+}
+
+/* Contenedor de contenido del mensaje */
+.message-content {
+  max-width: 70%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Mensaje propio: alineación a la derecha */
+.message.own-message .message-content {
+  align-items: flex-end;
+}
+
+/* Avatar del mensaje (solo para mensajes de otros) */
+.message-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: white;
+  font-size: 0.8rem;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+  align-self: flex-end;
+  margin-bottom: 0.25rem;
+}
+
+/* Nombre del remitente (solo para mensajes de otros) */
+.message-sender {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.25rem;
+  margin-left: 0.5rem;
+}
+
+/* Burbuja del mensaje */
+.message-bubble {
+  padding: 0.75rem 1rem;
+  border-radius: 1.25rem;
+  position: relative;
+  word-wrap: break-word;
+}
+
+/* Burbuja de mensaje propio */
+.message.own-message .message-bubble {
+  background: var(--color-primary);
+  color: white;
+  border-bottom-right-radius: 0.5rem;
+}
+
+/* Burbuja de mensaje de otros */
+.message.other-message .message-bubble {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border-bottom-left-radius: 0.5rem;
+}
+
+/* Texto del mensaje */
+.message-text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+/* Tiempo del mensaje */
+.message-time {
+  font-size: 0.7rem;
+  opacity: 0.7;
+  margin-top: 0.25rem;
+  display: block;
+  text-align: right;
+}
+
+.message.other-message .message-time {
+  text-align: left;
+}
+
+/* Estado de carga de mensajes */
+.messages-loading {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.loading-dots {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.loading-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+.loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+/* Estado sin mensajes */
+.no-messages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--color-text-secondary);
+  height: 100%;
+}
+
+.no-messages-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.no-messages h3 {
+  color: var(--color-text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+/* ===== SCROLLBAR PERSONALIZADO ===== */
+.messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messages::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.messages::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .messages {
+    padding: 0.75rem;
+  }
+  
+  .message-content {
+    max-width: 85%;
+  }
+  
+  .message-bubble {
+    padding: 0.6rem 0.8rem;
+  }
+  
+  .message-text {
+    font-size: 0.9rem;
+  }
+  
+  .message-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 0.7rem;
+    margin-right: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .messages {
+    padding: 0.5rem;
+  }
+  
+  .message-content {
+    max-width: 90%;
+  }
+}

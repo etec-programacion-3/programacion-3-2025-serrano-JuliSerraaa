@@ -10,8 +10,9 @@ import RegisterPage from './pages/RegisterPage.jsx';
 import ProductsPage from './pages/ProductsPage.jsx';
 import ProductDetailPage from './pages/ProductDetailPage.jsx';
 import CreateProductPage from './pages/CreateProductPage.jsx';
-import EditProductPage from './pages/EditProductPage.jsx'; // NUEVO
-import UserProfilePage from './pages/UserProfilePage.jsx'; // NUEVO
+import EditProductPage from './pages/EditProductPage.jsx';
+import UserProfilePage from './pages/UserProfilePage.jsx';
+import ChatPage from './pages/ChatPage.jsx'; // NUEVO IMPORT
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 // Punto de entrada de la aplicación React
@@ -62,7 +63,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               }
             />
             
-            {/* Ruta para editar producto - NUEVA */}
+            {/* Ruta para editar producto */}
             <Route
               path="products/edit/:id"
               element={
@@ -72,7 +73,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               }
             />
             
-            {/* Ruta para perfil de usuario - NUEVA */}
+            {/* Ruta para perfil de usuario */}
             <Route
               path="profile"
               element={
@@ -82,12 +83,22 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               }
             />
             
-            {/* Ruta para ver perfil de otros usuarios - NUEVA */}
+            {/* Ruta para ver perfil de otros usuarios */}
             <Route
               path="users/:userId"
               element={
                 <ProtectedRoute>
                   <UserProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* NUEVA RUTA: Página de chat y mensajería */}
+            <Route
+              path="chat"
+              element={
+                <ProtectedRoute>
+                  <ChatPage />
                 </ProtectedRoute>
               }
             />
