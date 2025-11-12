@@ -5,19 +5,19 @@
 # =========================================================
 
 # NOTA: Después del Login, copia el token en esta variable.
-@tokenUserA = 
+@tokenUserA = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJ1c2VyX2FAdGVzdC5jb20iLCJpYXQiOjE3NjI5MTcwNDEsImV4cCI6MTc2MzAwMzQ0MX0.nih6DFGQ-L7h2TlbVR8XKzwzVZmFJeFfj5t7WPCVHEc
 # NOTA: Después del Login, copia el token en esta variable.
-@tokenUserB = 
+@tokenUserB = yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZW1haWwiOiJ1c2VyX2JAdGVzdC5jb20iLCJpYXQiOjE3NjI5MTcwNTUsImV4cCI6MTc2MzAwMzQ1NX0.hqeXsCXVU9ldpcmH0apbSe19LKbQ7GdX7ADEGOx2YTs
 # NOTA: Después de crear el chat (Paso 5), copia el 'id' en esta variable.
 @convoId = 1
 # NOTA: Después del Login, copia el token en esta variable.
-@tokenUserC = 
+@tokenUserC = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJ1c2VyX2NAdGVzdC5jb20iLCJpYXQiOjE3NjI5MTcwNjksImV4cCI6MTc2MzAwMzQ2OX0.jNwqs28W3HpUW1x9i3nNb9iRAXODCyIl9OzBAegA348
+
 # =========================================================
 #                 SETUP: 3 USUARIOS DE PRUEBA
 # =========================================================
 
 ### 1. REGISTRAR USUARIO A (Propietario del chat)
-# NOTA: Su ID será 1 (o el ID más bajo disponible)
 POST {{baseUrl}}/api/auth/register
 Content-Type: application/json
 
@@ -38,7 +38,6 @@ Content-Type: application/json
 }
 
 ### 3. REGISTRAR USUARIO B (Receptor y Propietario del chat)
-# NOTA: Su ID será 2 (o el siguiente ID disponible)
 POST {{baseUrl}}/api/auth/register
 Content-Type: application/json
 
@@ -58,9 +57,7 @@ Content-Type: application/json
     "password": "Password123"
 }
 
-
 ### 4.5 REGISTRAR USUARIO C (Intruso - NO PARTICIPANTE)
-# NOTA: Su ID será 3 (o el siguiente ID disponible)
 POST {{baseUrl}}/api/auth/register
 Content-Type: application/json
 
@@ -80,26 +77,24 @@ Content-Type: application/json
     "password": "Password123"
 }
 
-
-### =========================================================
-###               PRUEBAS DE CONVERSACIONES
-### =========================================================
+# =========================================================
+#               PRUEBAS DE CONVERSACIONES - RUTAS CORREGIDAS
+# =========================================================
 
 ### 5. (ÉXITO) CREAR CONVERSACIÓN (Usuario A -> Usuario B)
 # DEBE devolver la conversación recién creada.
 # COPIA el 'id' de la conversación (ej: 1) en la variable @convoId
-POST {{baseUrl}}/api/auth/conversations
+POST {{baseUrl}}/api/chat/conversations
 Authorization: Bearer {{tokenUserA}}
 Content-Type: application/json
 
 {
     "receiverId": 2 
 }
-
 
 ### 6. (ÉXITO) INTENTAR CREAR CONVERSACIÓN DUPLICADA (A -> B)
 # DEBE devolver la misma conversación creada en el Paso 5 (id: {{convoId}}).
-POST {{baseUrl}}/api/auth/conversations
+POST {{baseUrl}}/api/chat/conversations
 Authorization: Bearer {{tokenUserA}}
 Content-Type: application/json
 
@@ -107,16 +102,14 @@ Content-Type: application/json
     "receiverId": 2 
 }
 
-
 ### 7. (ÉXITO) OBTENER LISTA DE CONVERSACIONES (Usuario A)
 # DEBE devolver una lista con 1 elemento (la conversación {{convoId}}).
-GET {{baseUrl}}/api/auth/conversations
+GET {{baseUrl}}/api/chat/conversations
 Authorization: Bearer {{tokenUserA}}
-
 
 ### 8. (ÉXITO) ENVIAR PRIMER MENSAJE (Usuario A)
 # DEBE devolver un status 201 Created.
-POST {{baseUrl}}/api/auth/conversations/{{convoId}}/messages
+POST {{baseUrl}}/api/chat/conversations/{{convoId}}/messages
 Authorization: Bearer {{tokenUserA}}
 Content-Type: application/json
 
@@ -124,10 +117,9 @@ Content-Type: application/json
     "content": "Hola Usuario B, ¿podríamos hablar sobre el producto?"
 }
 
-
 ### 9. (ÉXITO) ENVIAR RESPUESTA (Usuario B)
 # DEBE devolver un status 201 Created.
-POST {{baseUrl}}/api/auth/conversations/{{convoId}}/messages
+POST {{baseUrl}}/api/chat/conversations/{{convoId}}/messages
 Authorization: Bearer {{tokenUserB}}
 Content-Type: application/json
 
@@ -135,30 +127,27 @@ Content-Type: application/json
     "content": "Claro, Usuario A. Dime qué necesitas."
 }
 
-
 ### 10. (ÉXITO) OBTENER MENSAJES DEL CHAT (Usuario A)
 # DEBE devolver una lista con 2 mensajes.
-GET {{baseUrl}}/api/auth/conversations/{{convoId}}/messages
+GET {{baseUrl}}/api/chat/conversations/{{convoId}}/messages
 Authorization: Bearer {{tokenUserA}}
 
-
-### =========================================================
-###               PRUEBAS DE SEGURIDAD (403 Forbidden)
-### =========================================================
+# =========================================================
+#               PRUEBAS DE SEGURIDAD (403 Forbidden)
+# =========================================================
 
 ### 11. (FALLO) ENVIAR MENSAJE SIN TOKEN
 # DEBE FALLAR con 401 Unauthorized
-POST {{baseUrl}}/api/auth/conversations/{{convoId}}/messages
+POST {{baseUrl}}/api/chat/conversations/{{convoId}}/messages
 Content-Type: application/json
 
 {
     "content": "Soy un hacker."
 }
 
-
 ### 12. (FALLO) INTENTAR ENVIAR MENSAJE (Usuario C - Intruso)
 # DEBE FALLAR con 403 Forbidden. El Usuario C NO es user1Id ni user2Id.
-POST {{baseUrl}}/api/auth/conversations/{{convoId}}/messages
+POST {{baseUrl}}/api/chat/conversations/{{convoId}}/messages
 Authorization: Bearer {{tokenUserC}}
 Content-Type: application/json
 
@@ -166,8 +155,7 @@ Content-Type: application/json
     "content": "¡Hola desde fuera del chat! (Esto debería fallar)"
 }
 
-
 ### 13. (FALLO) INTENTAR LEER MENSAJES (Usuario C - Intruso)
 # DEBE FALLAR con 403 Forbidden.
-GET {{baseUrl}}/api/auth/conversations/{{convoId}}/messages
+GET {{baseUrl}}/api/chat/conversations/{{convoId}}/messages
 Authorization: Bearer {{tokenUserC}}

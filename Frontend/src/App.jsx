@@ -66,11 +66,22 @@ function App() {
                 >
                   Vender
                 </Link>
-                {/* Información del usuario logueado */}
+                {/* NUEVO: Enlace al sistema de mensajería */}
+                <Link 
+                  to="/chat" 
+                  className={`nav-link ${isActiveRoute('/chat') ? 'active' : ''}`}
+                >
+                  Mensajes
+                </Link>
+                <Link 
+                  to="/profile" 
+                  className={`nav-link ${isActiveRoute('/profile') ? 'active' : ''}`}
+                >
+                  Mi Perfil
+                </Link>
                 <span className="text-muted" style={{ margin: '0 1rem' }}>
                   Hola, {user?.username}
                 </span>
-                {/* Botón para cerrar sesión */}
                 <button 
                   onClick={handleLogout}
                   className="btn btn-outline"
