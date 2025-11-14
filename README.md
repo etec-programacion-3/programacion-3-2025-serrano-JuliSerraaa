@@ -39,15 +39,20 @@ El proyecto ha sido probado y funciona correctamente con:
 Verificar Versiones:
 
 # Verificar Node.js
+```bash
 node --version
-
+```
 # Verificar npm
+```bash
 npm --version
+```
 Si necesitas cambiar la versión de Node.js, puedes usar nvm:
 
 #Clonar repositorio
+```bash
 git clone <url-del-repositorio>
 cd miecommerce
+```
 ---
 
 ---
@@ -55,10 +60,14 @@ Paso 2: Configurar el Backend
 Terminal 1 - Backend:
 
 # Navegar a la carpeta del backend
+```bash
 cd backend
+```
 
 # Instalar dependencias
+```bash
 npm install
+```
 ---
 
 ---
@@ -68,37 +77,43 @@ Terminal 2 - Frontend:
 cd frontend
 
 # Instalar dependencias
+```bash
 npm install
+```
 ---
 
 ---
 Terminal 1 - Backend (Puerto 3000)
-bash
+```bash
 cd backend
 npm start
+```bash
 ---
 
 ---
 ✅ Deberías ver:
 
-text
+```text
 Servidor Express corriendo en http://localhost:3000
 Modelos sincronizados con la base de datos (Tablas creadas/actualizadas).
+```
 ---
 
 ---
 Terminal 2 - Frontend (Puerto 5173)
-bash
+```bash
 cd frontend
 npm run dev
+```
 ✅ Deberías ver:
 
-text
+```text
   VITE v4.4.0  ready in XXX ms
 
   ➜  Local:   http://localhost:5173/
   ➜  Network: use --host to expose
 👤 Guía de Uso - Flujo de Prueba Recomendado
+```
 ---
 
 ---
@@ -257,70 +272,80 @@ Diferenciación de mensajes propios/ajenos
 🔧 Troubleshooting
 Problemas Comunes y Soluciones
 ❌ Error: "Puerto 3000 ya en uso"
-
+```bash
 # Encontrar proceso usando el puerto
 sudo lsof -i :3000
-
 # Terminar proceso
 kill -9 <PID>
+```
 ---
 
 ---
 # O usar otro puerto (modificar .env)
+```bash
 ❌ Error: "Module not found" en el backend
 # Reinstalar dependencias del backend
 cd backend
 rm -rf node_modules package-lock.json
 npm install
+```
 ---
 
 ---
 ❌ Error: "Module not found" en el frontend
-
+```bash
 # Reinstalar dependencias del frontend
 cd frontend
 rm -rf node_modules package-lock.json
 npm install
+```
 ---
 
 ---
 ❌ Error: "Base de datos SQLite corrupta"
-
+```
 # Eliminar y regenerar base de datos
 cd backend
 rm -rf data/database.sqlite
 npm start  # Se recreará automáticamente
+```
 ---
 
 ---
 ❌ Error: CORS en el navegador
-
+```
 Verificar que ambos servidores (frontend/backend) estén corriendo
 Revisar que las URLs en frontend/src/api/AxiosConfig.js sean correctas
+```
 ---
 
 ---
 ❌ Error: "Invalid JWT token"
-
-bash
+```bash
 # Limpiar localStorage del navegador
 # O abrir consola y ejecutar:
 localStorage.clear()
-Comandos Útiles para Debug
-bash
+```bash
+### Comandos Útiles para Debug
+```bash
 # Ver logs del backend
 cd backend && npm start
-
+```
+```bash
 # Ver logs del frontend
 cd frontend && npm run dev
-
+```
+```
 # Limpiar caché de npm
 npm cache clean --force
-
+```
+```bash
 # Verificar estado de puertos (Linux/Arch)
 sudo netstat -tulpn | grep :3000
 sudo netstat -tulpn | grep :5173
-
+```
+```bash
 # Alternativa para ver puertos
 ss -tulpn | grep :3000
+```
 ---
