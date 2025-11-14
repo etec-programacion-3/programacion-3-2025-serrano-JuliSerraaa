@@ -31,8 +31,6 @@ RESPONSABILIDAD: Layout principal, header y estructura de paneles
   margin: 0;
 }
 
-/* ELIMINADO: .new-conversation-btn - Ya no existe el botón */
-
 /* Contenido principal - Layout de dos paneles */
 .chat-content {
   display: flex;
@@ -151,11 +149,5 @@ RESPONSABILIDAD: Layout principal, header y estructura de paneles
   
   .chat-title {
     font-size: 1.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .chat-page {
-    height: calc(100vh - 60px);
   }
 }

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
-import { useLocation } from 'react-router-dom';
 import apiClient from '../api/AxiosConfig.js';
 import ConversationList from '../components/ConversationList.jsx';
 import MessageList from '../components/MessageList.jsx';
@@ -14,12 +13,8 @@ import '../styles/ChatPage.css';
  * - Gestiona conversaciones y mensajes
  * - Implementa polling para actualización en tiempo casi real
  * - Coordina entre lista de conversaciones y vista de chat
- * - NUEVO: Selección automática de conversación al venir de un producto
  */
 function ChatPage() {
-  // ===== HOOKS DE REACT ROUTER =====
-  const location = useLocation(); // Hook para acceder al estado de navegación
-  
   // ===== CONTEXTO Y ESTADOS =====
   const { user } = useAuth(); // Usuario actual
   const [conversations, setConversations] = useState([]); // Lista de conversaciones
@@ -28,39 +23,24 @@ function ChatPage() {
   const [loading, setLoading] = useState(true); // Estado de carga inicial
   const [messagesLoading, setMessagesLoading] = useState(false); // Carga de mensajes
   const [error, setError] = useState(null); // Manejo de errores
-
   // ===== REFS PARA POLLING =====
   const pollingIntervalRef = useRef(null); // Referencia al intervalo de polling
 
   // ===== EFECTO PARA CARGAR CONVERSACIONES =====
+  /**
+   * HOOK: useEffect
+   * DESCRIPCIÓN: Carga la lista de conversaciones del usuario al montar el componente
+   */
   useEffect(() => {
     fetchConversations();
   }, []);
 
-  // ===== EFECTO PARA SELECCIÓN AUTOMÁTICA DE CONVERSACIÓN =====
+  // ===== EFECTO PARA POLLING DE MENSAJES =====
   /**
    * HOOK: useEffect
-   * DESCRIPCIÓN: Selecciona automáticamente una conversación si viene del estado de navegación
-   * DEPENDENCIAS: [location.state, conversations] - Se ejecuta cuando cambia el estado o se cargan conversaciones
+   * DESCRIPCIÓN: Inicia/detiene el polling basado en la conversación seleccionada
+   * DEPENDENCIAS: [selectedConversation] - Se reinicia cuando cambia la conversación
    */
-  useEffect(() => {
-    // Si hay un conversationId en el estado de navegación y hay conversaciones cargadas
-    if (location.state?.conversationId && conversations.length > 0) {
-      const targetConversation = conversations.find(
-        conv => conv.id === location.state.conversationId
-      );
-      
-      if (targetConversation) {
-        console.log('Seleccionando conversación automáticamente:', targetConversation.id);
-        setSelectedConversation(targetConversation);
-        
-        // Limpiar el estado de navegación para no repetir la selección automática
-        window.history.replaceState({}, document.title);
-      }
-    }
-  }, [location.state, conversations]);
-
-  // ===== EFECTO PARA POLLING DE MENSAJES =====
   useEffect(() => {
     // Limpiar intervalo anterior si existe
     if (pollingIntervalRef.current) {
@@ -208,6 +188,36 @@ function ChatPage() {
     );
   };
 
+  /**
+   * MANEJADOR: handleNewConversation
+   * DESCRIPCIÓN: Crea una nueva conversación y la selecciona
+   * @param {number} otherUserId - ID del usuario con quien iniciar conversación
+   */
+  const handleNewConversation = async (otherUserId) => {
+    try {
+      // LLAMADA A LA API: Crear nueva conversación
+      const response = await apiClient.post('/chat/conversations', {
+        receiverId: otherUserId
+      });
+
+      const newConversation = response.data;
+      
+      // Agregar la nueva conversación a la lista
+      setConversations(prev => [newConversation, ...prev]);
+      
+      // Seleccionar la nueva conversación
+      setSelectedConversation(newConversation);
+      setMessages([]); // Limpiar mensajes
+      
+      // Cerrar modal
+      setShowNewConversationModal(false);
+      
+    } catch (err) {
+      console.error('Error al crear conversación:', err);
+      setError('Error al crear la conversación. Intenta nuevamente.');
+    }
+  };
+
   // ===== RENDERIZADO CONDICIONAL =====
   
   // ESTADO DE CARGA INICIAL
@@ -224,7 +234,6 @@ function ChatPage() {
       {/* ===== HEADER DEL CHAT ===== */}
       <div className="chat-header">
         <h1 className="chat-title">Mensajes</h1>
-        {/* Botón de nueva conversación ELIMINADO según lo solicitado */}
       </div>
 
       {/* ===== MENSAJE DE ERROR ===== */}
@@ -291,17 +300,13 @@ function ChatPage() {
               <div className="no-conversation-icon">💬</div>
               <h3>Selecciona una conversación</h3>
               <p className="text-muted">
-                Elige una conversación existente para comenzar a chatear
+                Elige una conversación existente o inicia una nueva
               </p>
-              {conversations.length === 0 && (
-                <p className="text-muted" style={{ marginTop: '1rem' }}>
-                  Ve a un producto y haz clic en "Contactar al Vendedor" para iniciar tu primera conversación
-                </p>
-              )}
             </div>
           )}
         </div>
       </div>
+
     </div>
   );
 }

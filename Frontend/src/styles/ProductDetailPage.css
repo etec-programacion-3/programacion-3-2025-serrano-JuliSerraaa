@@ -96,9 +96,61 @@ RESPONSABILIDAD: Diseño de la vista detallada, información del producto y acci
 .buyer-actions {
   text-align: center;
   margin: 2rem 0;
+}
+
+/* Sección de compra */
+.purchase-section {
   padding: 1.5rem;
   background: rgba(16, 185, 129, 0.05);
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--border-radius-lg);
+  margin-bottom: 1rem;
+}
+
+.purchase-btn {
+  font-size: 1.1rem;
+  padding: 1rem 2rem;
+  min-width: 200px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: none;
+}
+
+.purchase-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+}
+
+/* Separador entre botones */
+.action-separator {
+  margin: 1.5rem 0;
+  position: relative;
+  text-align: center;
+}
+
+.action-separator::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.action-separator span {
+  background: var(--color-bg-primary);
+  padding: 0 1rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Sección de contacto */
+.contact-section {
+  padding: 1.5rem;
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   border-radius: var(--border-radius-lg);
 }
 
@@ -210,13 +262,20 @@ RESPONSABILIDAD: Diseño de la vista detallada, información del producto y acci
   }
   
   .buyer-actions {
-    padding: 1.25rem;
     margin: 1.5rem 0;
   }
   
+  .purchase-section,
+  .contact-section {
+    padding: 1.25rem;
+  }
+  
+  .purchase-btn,
   .contact-seller-btn {
     font-size: 1rem;
     padding: 0.875rem 1.5rem;
+    min-width: auto;
+    width: 100%;
   }
 }
 
@@ -234,7 +293,8 @@ RESPONSABILIDAD: Diseño de la vista detallada, información del producto y acci
     margin: 1.5rem 0;
   }
   
-  .buyer-actions {
+  .purchase-section,
+  .contact-section {
     padding: 1rem;
   }
 }

@@ -20,30 +20,12 @@ export const AuthProvider = ({ children }) => {
   // ===== ESTADOS DE AUTENTICACIÓN =====
   
   // Estado para el token JWT - Inicializa desde localStorage si existe
-  const [token, setToken] = useState(() => {
-    try {
-      return localStorage.getItem('token');
-    } catch (error) {
-      console.error('Error reading token from localStorage:', error);
-      return null;
-    }
-  });
+  const [token, setToken] = useState(localStorage.getItem('token'));
   
   // Estado para los datos del usuario - Inicializa desde localStorage si existe
   const [user, setUser] = useState(() => {
-    try {
-      const savedUser = localStorage.getItem('user');
-      // Verificar que el valor no sea "undefined" o "null" como string
-      if (savedUser && savedUser !== 'undefined' && savedUser !== 'null') {
-        return JSON.parse(savedUser);
-      }
-      return null;
-    } catch (error) {
-      console.error('Error parsing user data from localStorage:', error);
-      // Limpiar datos corruptos
-      localStorage.removeItem('user');
-      return null;
-    }
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
   });
 
   /**
@@ -53,14 +35,10 @@ export const AuthProvider = ({ children }) => {
    * @param {object} userData - Datos del usuario autenticado
    */
   const login = (newToken, userData) => {
-    try {
-      localStorage.setItem('token', newToken); // Persistir token en localStorage
-      localStorage.setItem('user', JSON.stringify(userData)); // Persistir usuario
-      setToken(newToken); // Actualizar estado de React
-      setUser(userData); // Actualizar estado del usuario
-    } catch (error) {
-      console.error('Error saving auth data to localStorage:', error);
-    }
+    localStorage.setItem('token', newToken); // Persistir token en localStorage
+    localStorage.setItem('user', JSON.stringify(userData)); // Persistir usuario
+    setToken(newToken); // Actualizar estado de React
+    setUser(userData); // Actualizar estado del usuario
   };
 
   /**
@@ -68,14 +46,10 @@ export const AuthProvider = ({ children }) => {
    * DESCRIPCIÓN: Limpia todos los datos de autenticación
    */
   const logout = () => {
-    try {
-      localStorage.removeItem('token'); // Eliminar token del localStorage
-      localStorage.removeItem('user'); // Eliminar usuario del localStorage
-      setToken(null); // Limpiar estado del token
-      setUser(null); // Limpiar estado del usuario
-    } catch (error) {
-      console.error('Error clearing auth data from localStorage:', error);
-    }
+    localStorage.removeItem('token'); // Eliminar token del localStorage
+    localStorage.removeItem('user'); // Eliminar usuario del localStorage
+    setToken(null); // Limpiar estado del token
+    setUser(null); // Limpiar estado del usuario
   };
 
   // ===== VALOR DEL CONTEXTO =====

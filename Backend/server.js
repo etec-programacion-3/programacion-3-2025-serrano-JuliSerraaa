@@ -1,11 +1,12 @@
 // server.js (Confirmación del orden correcto)
 
 import app from './src/app.js';
-import { connectDB } from './src/config/config.js'; // Función que intenta conectar
-import User from './src/models/user.js'; // Modelo de usuario
-import Product from './src/models/products.js'; //Modelo de productos
-import Conversation from './src/models/conversation.js'; // Modelo de conversación
-import Message from './src/models/message.js'; // Modelo de mensaje
+import { connectDB } from './src/config/config.js';
+import User from './src/models/user.js';
+import Product from './src/models/products.js';
+import Conversation from './src/models/conversation.js';
+import Message from './src/models/message.js';
+import Purchase from './src/models/purchase.js'; // NUEVO
 // -----------------------------
 import dotenv from 'dotenv';
 
@@ -20,6 +21,7 @@ async function syncDatabase() {
     await Product.sync({ alter: true });
     await Conversation.sync({ alter: true });
     await Message.sync({ alter: true });
+    await Purchase.sync({ alter: true }); // NUEVO
     // -----------------------------
     console.log('Modelos sincronizados con la base de datos (Tablas creadas/actualizadas).');
   } catch (error) {

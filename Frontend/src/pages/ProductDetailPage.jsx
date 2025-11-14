@@ -11,7 +11,7 @@ import '../styles/ProductDetailPage.css'; // Importar estilos específicos
  * - Obtiene y muestra información detallada del producto
  * - Verifica si el usuario es el propietario para mostrar acciones
  * - Permite eliminar productos (solo para propietarios)
- * - NUEVO: Permite contactar al vendedor (para no propietarios)
+ * - Permite contactar al vendedor o comprar el producto
  */
 function ProductDetailPage() {
   // ===== HOOKS DE REACT ROUTER =====
@@ -26,6 +26,7 @@ function ProductDetailPage() {
   const [error, setError] = useState(null); // Maneja mensajes de error
   const [loading, setLoading] = useState(true); // Controla estado de carga
   const [contacting, setContacting] = useState(false); // Estado de contacto con vendedor
+  const [purchasing, setPurchasing] = useState(false); // Estado de compra
 
   // ===== EFECTO PARA CARGAR DETALLES DEL PRODUCTO =====
   useEffect(() => {
@@ -73,10 +74,6 @@ function ProductDetailPage() {
   /**
    * MANEJADOR: handleContactSeller
    * DESCRIPCIÓN: Inicia una conversación con el vendedor del producto
-   * FUNCIONALIDAD:
-   * - Crea una nueva conversación con el vendedor
-   * - Envía un mensaje automático de interés
-   * - Redirige al chat con la conversación abierta
    */
   const handleContactSeller = async () => {
     if (!product || !user) return;
@@ -115,6 +112,45 @@ function ProductDetailPage() {
       setError(err.response?.data?.message || 'Error al contactar al vendedor. Intenta nuevamente.');
     } finally {
       setContacting(false);
+    }
+  };
+
+  /**
+   * MANEJADOR: handlePurchase
+   * DESCRIPCIÓN: Realiza la compra del producto y redirige al chat
+   */
+  const handlePurchase = async () => {
+    if (!product || !user) return;
+    
+    setPurchasing(true);
+    setError(null);
+
+    try {
+      console.log('1. Iniciando compra del producto:', product.productId);
+      
+      // ===== 1. CREAR COMPRA =====
+      const purchaseResponse = await apiClient.post('/purchases', {
+        productId: product.productId
+      });
+      
+      const { purchase, conversation } = purchaseResponse.data;
+      console.log('2. Compra creada:', purchase);
+      console.log('3. Conversación:', conversation);
+
+      // ===== 2. REDIRIGIR AL CHAT =====
+      navigate('/chat', { 
+        state: { 
+          conversationId: conversation.id,
+          autoSelect: true 
+        } 
+      });
+      console.log('4. Redirigiendo al chat...');
+
+    } catch (err) {
+      console.error('Error completo en compra:', err);
+      setError(err.response?.data?.message || 'Error al procesar la compra. Intenta nuevamente.');
+    } finally {
+      setPurchasing(false);
     }
   };
 
@@ -164,19 +200,41 @@ function ProductDetailPage() {
         {/* ===== PRECIO DESTACADO ===== */}
         <div className="product-detail-price">{product.price}</div>
 
-        {/* ===== BOTÓN PARA COMPRADORES (NO PROPIETARIOS) ===== */}
+        {/* ===== ACCIONES PARA COMPRADORES (NO PROPIETARIOS) ===== */}
         {!isOwner && (
           <div className="buyer-actions">
-            <button 
-              onClick={handleContactSeller}
-              disabled={contacting}
-              className="btn btn-primary contact-seller-btn"
-            >
-              {contacting ? '🔄 Contactando...' : '💬 Contactar al Vendedor'}
-            </button>
-            <p className="action-help">
-              Inicia una conversación con el vendedor para realizar tu compra
-            </p>
+            {/* BOTÓN DE COMPRAR */}
+            <div className="purchase-section">
+              <button 
+                onClick={handlePurchase}
+                disabled={purchasing}
+                className="btn btn-success purchase-btn"
+              >
+                {purchasing ? '🔄 Procesando...' : '💰 Comprar Ahora'}
+              </button>
+              <p className="action-help">
+                Compra inmediata - Se iniciará conversación con el vendedor
+              </p>
+            </div>
+
+            {/* SEPARADOR */}
+            <div className="action-separator">
+              <span>o</span>
+            </div>
+
+            {/* BOTÓN DE CONTACTAR */}
+            <div className="contact-section">
+              <button 
+                onClick={handleContactSeller}
+                disabled={contacting}
+                className="btn btn-primary contact-seller-btn"
+              >
+                {contacting ? '🔄 Contactando...' : '💬 Contactar al Vendedor'}
+              </button>
+              <p className="action-help">
+                Solo conversación - Para consultas antes de comprar
+              </p>
+            </div>
           </div>
         )}
 
