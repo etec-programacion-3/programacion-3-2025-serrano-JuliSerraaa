@@ -253,32 +253,6 @@ Diferenciación de mensajes propios/ajenos
 ---
 
 ---
-🗂️ Estructura del Proyecto
-text
-miecommerce/
-├── backend/
-│   ├── src/
-│   │   ├── controllers/     # Lógica de endpoints
-│   │   ├── models/          # Modelos de base de datos SQLite
-│   │   ├── routes/          # Definición de rutas
-│   │   ├── middleware/      # Autenticación y validaciones
-│   │   └── config/          # Configuración de SQLite
-│   ├── data/               # Base de datos SQLite (se crea automáticamente)
-│   ├── server.js           # Punto de entrada del servidor
-│   └── package.json
-├── frontend/
-│   ├── src/
-│   │   ├── components/     # Componentes reutilizables
-│   │   ├── pages/          # Páginas principales
-│   │   ├── context/        # Estado global (Auth)
-│   │   ├── api/            # Configuración de Axios
-│   │   └── styles/         # Archivos CSS
-│   ├── index.html
-│   └── package.json
-└── README.md
----
-
----
 🔧 Troubleshooting
 Problemas Comunes y Soluciones
 ❌ Error: "Puerto 3000 ya en uso"
