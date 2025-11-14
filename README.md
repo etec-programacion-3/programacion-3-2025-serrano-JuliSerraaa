@@ -48,9 +48,10 @@ Si necesitas cambiar la versión de Node.js, puedes usar nvm:
 #Clonar repositorio
 git clone <url-del-repositorio>
 cd miecommerce
-Paso 2: Configurar el Backend
+---
 
 ---
+Paso 2: Configurar el Backend
 Terminal 1 - Backend:
 
 # Navegar a la carpeta del backend
