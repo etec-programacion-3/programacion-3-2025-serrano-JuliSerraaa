@@ -324,4 +324,3 @@ sudo netstat -tulpn | grep :5173
 # Alternativa para ver puertos
 ss -tulpn | grep :3000
 ---
-
