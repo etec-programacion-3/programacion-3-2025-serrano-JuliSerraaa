@@ -74,7 +74,10 @@ npm install
 Terminal 2 - Frontend:
 
 # Navegar a la carpeta del frontend (desde la raíz del proyecto)
+
+```bash
 cd frontend
+```
 
 # Instalar dependencias
 ```bash
