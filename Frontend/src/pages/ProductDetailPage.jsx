@@ -11,6 +11,7 @@ import '../styles/ProductDetailPage.css'; // Importar estilos específicos
  * - Obtiene y muestra información detallada del producto
  * - Verifica si el usuario es el propietario para mostrar acciones
  * - Permite eliminar productos (solo para propietarios)
+ * - Permite contactar al vendedor o comprar el producto
  */
 function ProductDetailPage() {
   // ===== HOOKS DE REACT ROUTER =====
@@ -24,18 +25,11 @@ function ProductDetailPage() {
   const [product, setProduct] = useState(null); // Almacena los detalles del producto
   const [error, setError] = useState(null); // Maneja mensajes de error
   const [loading, setLoading] = useState(true); // Controla estado de carga
+  const [contacting, setContacting] = useState(false); // Estado de contacto con vendedor
+  const [purchasing, setPurchasing] = useState(false); // Estado de compra
 
   // ===== EFECTO PARA CARGAR DETALLES DEL PRODUCTO =====
-  /**
-   * HOOK: useEffect
-   * DESCRIPCIÓN: Carga los detalles del producto cuando el componente se monta o el ID cambia
-   * DEPENDENCIAS: [id] - Se ejecuta cuando el ID del producto en la URL cambia
-   */
   useEffect(() => {
-    /**
-     * FUNCIÓN: fetchProduct
-     * DESCRIPCIÓN: Obtiene los detalles de un producto específico desde la API
-     */
     const fetchProduct = async () => {
       try {
         setLoading(true);
@@ -60,10 +54,6 @@ function ProductDetailPage() {
   /**
    * MANEJADOR: handleDelete
    * DESCRIPCIÓN: Elimina el producto actual (solo para propietarios)
-   * FUNCIONALIDAD:
-   * - Muestra confirmación antes de eliminar
-   * - Llama a la API para eliminar el producto
-   * - Redirige al catálogo después de eliminar
    */
   const handleDelete = async () => {
     // Confirmación para prevenir eliminaciones accidentales
@@ -78,6 +68,89 @@ function ProductDetailPage() {
         // Manejar errores de eliminación
         setError('Error al eliminar el producto. Intenta nuevamente.');
       }
+    }
+  };
+
+  /**
+   * MANEJADOR: handleContactSeller
+   * DESCRIPCIÓN: Inicia una conversación con el vendedor del producto
+   */
+  const handleContactSeller = async () => {
+    if (!product || !user) return;
+    
+    setContacting(true);
+    setError(null);
+
+    try {
+      console.log('1. Iniciando contacto con vendedor:', product.userId);
+      
+      // ===== 1. CREAR CONVERSACIÓN CON EL VENDEDOR =====
+      const conversationResponse = await apiClient.post('/chat/conversations', {
+        receiverId: product.userId
+      });
+      
+      const conversation = conversationResponse.data;
+      console.log('2. Conversación creada:', conversation);
+
+      // ===== 2. ENVIAR MENSAJE AUTOMÁTICO =====
+      await apiClient.post(`/chat/conversations/${conversation.id}/messages`, {
+        content: `Hola, estoy interesado en tu producto: "${product.productName}"`
+      });
+      console.log('3. Mensaje automático enviado');
+
+      // ===== 3. REDIRIGIR AL CHAT =====
+      navigate('/chat', { 
+        state: { 
+          conversationId: conversation.id,
+          autoSelect: true 
+        } 
+      });
+      console.log('4. Redirigiendo al chat...');
+
+    } catch (err) {
+      console.error('Error completo al contactar vendedor:', err);
+      setError(err.response?.data?.message || 'Error al contactar al vendedor. Intenta nuevamente.');
+    } finally {
+      setContacting(false);
+    }
+  };
+
+  /**
+   * MANEJADOR: handlePurchase
+   * DESCRIPCIÓN: Realiza la compra del producto y redirige al chat
+   */
+  const handlePurchase = async () => {
+    if (!product || !user) return;
+    
+    setPurchasing(true);
+    setError(null);
+
+    try {
+      console.log('1. Iniciando compra del producto:', product.productId);
+      
+      // ===== 1. CREAR COMPRA =====
+      const purchaseResponse = await apiClient.post('/purchases', {
+        productId: product.productId
+      });
+      
+      const { purchase, conversation } = purchaseResponse.data;
+      console.log('2. Compra creada:', purchase);
+      console.log('3. Conversación:', conversation);
+
+      // ===== 2. REDIRIGIR AL CHAT =====
+      navigate('/chat', { 
+        state: { 
+          conversationId: conversation.id,
+          autoSelect: true 
+        } 
+      });
+      console.log('4. Redirigiendo al chat...');
+
+    } catch (err) {
+      console.error('Error completo en compra:', err);
+      setError(err.response?.data?.message || 'Error al procesar la compra. Intenta nuevamente.');
+    } finally {
+      setPurchasing(false);
     }
   };
 
@@ -107,10 +180,6 @@ function ProductDetailPage() {
   );
 
   // ===== VERIFICACIÓN DE PROPIEDAD =====
-  /**
-   * Determina si el usuario actual es el propietario del producto
-   * Compara el ID del usuario logueado con el userId del producto
-   */
   const isOwner = user && user.id === product.userId;
 
   return (
@@ -130,6 +199,44 @@ function ProductDetailPage() {
 
         {/* ===== PRECIO DESTACADO ===== */}
         <div className="product-detail-price">{product.price}</div>
+
+        {/* ===== ACCIONES PARA COMPRADORES (NO PROPIETARIOS) ===== */}
+        {!isOwner && (
+          <div className="buyer-actions">
+            {/* BOTÓN DE COMPRAR */}
+            <div className="purchase-section">
+              <button 
+                onClick={handlePurchase}
+                disabled={purchasing}
+                className="btn btn-success purchase-btn"
+              >
+                {purchasing ? '🔄 Procesando...' : '💰 Comprar Ahora'}
+              </button>
+              <p className="action-help">
+                Compra inmediata - Se iniciará conversación con el vendedor
+              </p>
+            </div>
+
+            {/* SEPARADOR */}
+            <div className="action-separator">
+              <span>o</span>
+            </div>
+
+            {/* BOTÓN DE CONTACTAR */}
+            <div className="contact-section">
+              <button 
+                onClick={handleContactSeller}
+                disabled={contacting}
+                className="btn btn-primary contact-seller-btn"
+              >
+                {contacting ? '🔄 Contactando...' : '💬 Contactar al Vendedor'}
+              </button>
+              <p className="action-help">
+                Solo conversación - Para consultas antes de comprar
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* ===== INFORMACIÓN DETALLADA DEL PRODUCTO ===== */}
         <div className="product-info">
