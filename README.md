@@ -87,7 +87,7 @@ Terminal 1 - Backend (Puerto 3000)
 ```bash
 cd backend
 npm start
-```bash
+```
 ---
 
 ---
